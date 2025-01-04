@@ -1,58 +1,25 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 'use client'
 
 import { useChat, useSidebar, useUser } from '@/hooks/useSelectors'
-import { UserCircle2Icon, StepBack, StepForward } from 'lucide-react'
+import { UserCircle2Icon } from 'lucide-react'
 import React from 'react'
 import Chatquestion from '../chat/Chatquestion'
-import { useDispatch } from 'react-redux'
-import { toggleSidebar } from '@/store/sidebar/sidebar.slice'
+import SidebarToggleBtn from './SidebarToggleBtn'
+import NeonLogo from './NeonLogo'
 
 const Sidebar = () => {
 	const { isOpen } = useSidebar()
-	const dispatch = useDispatch()
 	const { user } = useUser() || { user: { name: 'Гость' } }
 	const { history } = useChat()
 	const firstQuestion = history[0]?.content
 
 	return (
 		<aside
-			className={`relative bg-black1 ${
-				isOpen ? 'border-r-2' : 'border-none'
-			} border-black3 min-h-screen flex flex-col justify-between transition-all duration-300 ${
-				isOpen ? 'w-64' : 'w-0'
-			}`}>
-			{/* Кнопка для скрытия/открытия Sidebar */}
-			<button
-				onClick={() => dispatch(toggleSidebar())}
-				className={`absolute top-8 ${
-					isOpen ? 'right-[-11px]' : 'right-[-30px]'
-				} w-8 h-8   border-gray1 rounded-full flex justify-center items-center transform transition-transform duration-300`}
-				aria-label={
-					isOpen ? 'Скрыть боковую панель' : 'Показать боковую панель'
-				}>
-				{isOpen ? (
-					<StepBack className='text-gray1 hover:text-white/80 duration-200' />
-				) : (
-					<StepForward className='text-gray1 hover:text-white/80 duration-200' />
-				)}
-			</button>
-
+			className={`relative border-black3 border-r-2 bg-black1 min-h-screen flex flex-col justify-between transition-all duration-300 ${isOpen ? 'w-64' : 'w-0 border-none'}`}>
+			<SidebarToggleBtn isOpen={isOpen} />
 			<div
-				className={`flex flex-col justify-between transition-all duration-300 ${
-					isOpen ? 'opacity-100' : 'hidden opacity-0'
-				}`}>
-				{/* @ts-ignore */}
-				<iframe
-					className={`mb-10 transition-opacity duration-300 ${
-						isOpen ? 'block px-5 opacity-100' : 'hidden opacity-0'
-					}`}
-					src='//ntmaker.gfto.ru/newneontext/?image_height=70&image_width=200&image_font_shadow_width=2&image_font_size=36&image_background_color=141316&image_text_color=220FB2&image_font_shadow_color=9386E7&image_url=&image_text=Contact&image_font_family=RafaleRU&'
-					frameBorder='no'
-					scrolling='no'
-					width='200'
-					height='70'></iframe>
-
+				className={`flex flex-col justify-between transition-all duration-300 ${isOpen ? 'opacity-100' : 'hidden opacity-0'}`}>
+				<NeonLogo isOpen={isOpen} />
 				<div
 					className={`mb-5 transition-transform duration-300 ${
 						isOpen
@@ -92,7 +59,11 @@ const Sidebar = () => {
 						: '-translate-x-full opacity-0 hidden'
 				}`}>
 				<UserCircle2Icon className='text-blue1' />
-				<span className='text-white/70'>{user?.name}</span>
+				{user ? (
+					<span className='text-white/70'>{user?.name}</span>
+				) : (
+					<span className='text-white/70'>Гость</span>
+				)}
 			</div>
 		</aside>
 	)

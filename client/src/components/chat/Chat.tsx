@@ -20,7 +20,7 @@ const Chat = () => {
 	}
 
 	return (
-		<div className='px-4 pb-4 flex flex-col justify-between w-full gap-7 h-full min-h-[92vh] overflow-y-auto'>
+		<div className='px-4 pb-4 flex flex-col justify-between w-full gap-7 min-h-[90vh] overflow-y-auto'>
 			<ChatHistory history={history} />
 			<ChatInput isLoading={isLoading} onMessageSend={handleMessageSend} />
 		</div>
