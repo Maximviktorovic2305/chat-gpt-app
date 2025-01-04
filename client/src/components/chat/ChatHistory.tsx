@@ -3,19 +3,19 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChatMessage } from '@/types'
 import './ChatHistory.css'
-import { Copy, Check, CircleHelp } from 'lucide-react' // Импортируем иконки Copy и Check
+import { Copy, Check, CircleHelp } from 'lucide-react'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 
 interface ChatHistoryProps {
 	history: ChatMessage[]
 }
 
 const ChatHistory = ({ history }: ChatHistoryProps) => {
-	const endOfMessagesRef = useRef<HTMLDivElement | null>(null) // Создаём реф для конца сообщений
-	const [copiedIndex, setCopiedIndex] = useState<number | null>(null) // Хранит индекс скопированного сообщения
+	const endOfMessagesRef = useRef<HTMLDivElement | null>(null)
+	const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
 
 	useEffect(() => {
-		// Прокручиваем вниз, когда 'history' обновляется
 		if (endOfMessagesRef.current) {
 			endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' })
 		}
@@ -33,6 +33,47 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 			.catch(err => {
 				console.error('Ошибка при копировании: ', err)
 			})
+	}
+
+	const renderMessageContent = (content: string) => {
+		const codeBlockRegex = /```([\s\S]*?)```/g
+		const parts = content.split(codeBlockRegex)
+
+		return parts.map((part, index) => {
+			if (index % 2 === 1) {
+				// Это код
+				return (
+					<SyntaxHighlighter
+						key={index}
+						language='javascript'
+						style={{
+							container: {
+								background: '#282C34', // Цвет фона
+								borderRadius: '5px',
+								padding: '10px',
+							},
+							code: {
+								color: '#ffffff', // Цвет текста
+							},
+						}}
+						customStyle={{
+							background: '#282C34', // Установка цвета фона
+							color: '#ffffff', // Установка цвета текста
+							borderRadius: '5px',
+							padding: '10px',
+						}}>
+						{part}
+					</SyntaxHighlighter>
+				)
+			} else {
+				// Это текст
+				return (
+					<p key={index} className='mt-1'>
+						{part}
+					</p>
+				)
+			}
+		})
 	}
 
 	return (
@@ -63,8 +104,7 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 							overflowWrap: 'break-word',
 							wordWrap: 'break-word',
 							wordBreak: 'break-word',
-						}} // Стили для переноса слов
-					>
+						}}>
 						<strong className='text-sm text-white/50'>
 							{msg.role === 'user' ? 'Вы' : 'AI Ассистент'}:
 						</strong>
@@ -76,16 +116,13 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 								{copiedIndex === index ? (
 									<Check className='h-5 w-auto text-green-600' />
 								) : (
-									<Copy className='h-5 w-auto text-white/50 hover:text-white/70' />
+									<Copy className='h-5 w-auto text-gray1 hover:text-white/70' />
 								)}
 							</button>
 						)}
-						<p className='mt-1'>
-							{msg.content} {/* Отображаем полное содержимое без разбиения */}
-						</p>
+						{renderMessageContent(msg.content)}
 					</div>
 				))}
-				{/* Элемент реф для прокрутки */}
 				<div ref={endOfMessagesRef} />
 			</div>
 		</div>

@@ -8,7 +8,7 @@ import { addMessage } from '@/store/chat/chat.slice'
 import ChatHistory from './ChatHistory'
 import ChatInput from './ChatInput'
 
-const Chat: React.FC = () => {
+const Chat = () => {
 	const dispatch = useDispatch()
 	const { history, isLoading } = useChat()
 
@@ -20,7 +20,7 @@ const Chat: React.FC = () => {
 	}
 
 	return (
-		<div className='p-4 flex flex-col justify-between w-full gap-7 h-full min-h-screen overflow-y-auto'>
+		<div className='px-4 pb-4 flex flex-col justify-between w-full gap-7 h-full min-h-[92vh] overflow-y-auto'>
 			<ChatHistory history={history} />
 			<ChatInput isLoading={isLoading} onMessageSend={handleMessageSend} />
 		</div>

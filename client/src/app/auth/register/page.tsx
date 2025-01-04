@@ -117,10 +117,12 @@ const Page = () => {
 							Есть аккаунт?{' '}
 							<Link
 								href={'/auth/login'}
-								className='text-blue-400 hover:text-blue-500 duration-200 cursor-pointer underline'>
+								className='text-blue-500 hover:text-blue-700 duration-200 cursor-pointer underline'>
 								Войти
 							</Link>
 						</div>
+
+						<div className='text-[11px] text-center'>Создавая аккаунт вы соглашаетесь с нашими <Link className='underline cursor-pointer text-blue-500 hover:text-blue-700 duration-200' href="/oferta">Офертой</Link> и <Link className='underline cursor-pointer text-blue-500 hover:text-blue-700 duration-200' href="/private-policy">Политикой конфиденциальности</Link>.</div>
 					</form>
 				</div>
 			</div>

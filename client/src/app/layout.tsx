@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
 import Providers from '@/providers/Providers'
-import Sidebar from '@/components/Sidebar'
+import BodyLayout from './BodyLayout'
 
 const geistSans = localFont({
 	src: './fonts/GeistVF.woff',
@@ -25,15 +25,14 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode
 }>) {
+
 	return (
 		<html lang='en'>
 			<Providers>
-				<body className={`grid text-white ${geistSans.variable} ${geistMono.variable} antialiased`} style={{ gridTemplateColumns: '1fr 5fr' }}>
-					<Sidebar />
-					<div
-						className='bg-black2'>
-						{children}
-					</div>
+				<body
+					className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+					>
+					<BodyLayout>{children}</BodyLayout>
 				</body>
 			</Providers>
 		</html>
