@@ -11,13 +11,12 @@ const Header = () => {
 	const { logout } = useActions()
 
 	return (
-		<div className='px-4 py-3 flex items-center justify-between'>
+		<div className='px-4 py-3 flex items-center gap-2 justify-between sm:mx-[10%]'>
          <div className='flex items-center gap-2'>
          <span className='text-white/50'>Нейросети Mistral AI</span>
 			<HoverCard>
 				<HoverCardTrigger asChild>
-               
-					<CircleHelp className='w-4 h-auto cursor-pointer text-gray1 hover:text-white duration-200' />
+					<CircleHelp className='min-w-4 min-h-4 size-4 cursor-pointer text-gray1 hover:text-white duration-200' />
 				</HoverCardTrigger>
 				<HoverCardContent className='w-full text-[12px] max-w-[400px]'>
 					<div className='text-[12px] text-white/30 mb-1'>

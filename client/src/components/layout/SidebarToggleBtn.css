@@ -1,0 +1,20 @@
+@keyframes textColorChange {
+   0% {
+     color: #28272A; 
+   }
+   50% {
+      color: #59595B;
+   }
+   100% {
+     color: #28272A; 
+   }
+ }
+ 
+ .icon-container {
+   display: inline-block; 
+ }
+ 
+ .icon {
+   animation: textColorChange 5s infinite; 
+   transition: color 0.3s ease; 
+ }

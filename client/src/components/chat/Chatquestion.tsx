@@ -16,7 +16,10 @@ const Chatquestion = ({ question }: Props) => {
 				{editedQuestion}
 			</span>
 			<Trash2Icon
-				onClick={() => dispatch(clearHistory())}
+				onClick={() => {
+					dispatch(clearHistory())
+					window.scrollTo(0, 0)
+				}}
 				className='h-4 w-auto text-neutral-700 cursor-pointer hover:text-neutral-400'
 			/>
 		</div>

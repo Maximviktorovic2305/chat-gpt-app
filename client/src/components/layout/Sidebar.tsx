@@ -15,7 +15,7 @@ const Sidebar = () => {
 
 	return (
 		<aside
-			className={`relative border-black3 border-r-2 bg-black1 min-h-screen flex flex-col justify-between transition-all duration-300 ${isOpen ? 'w-64' : 'w-0 border-none'}`}>
+			className={`relative border-black3 max-sm:text-[12px] border-r-2 bg-black1 min-h-screen flex flex-col justify-between transition-all duration-300 ${isOpen ? 'w-64' : 'w-0'}`}>
 			<SidebarToggleBtn isOpen={isOpen} />
 			<div
 				className={`flex flex-col justify-between transition-all duration-300 ${isOpen ? 'opacity-100' : 'hidden opacity-0'}`}>
@@ -58,11 +58,11 @@ const Sidebar = () => {
 						? 'transform translate-x-0 opacity-100'
 						: '-translate-x-full opacity-0 hidden'
 				}`}>
-				<UserCircle2Icon className='text-blue1' />
+				<UserCircle2Icon className='text-gray1 cursor-pointer hover:text-white/70 duration-200' />
 				{user ? (
-					<span className='text-white/70'>{user?.name}</span>
+					<span className='text-white/70 text-sm font-bold'>{user?.name}</span>
 				) : (
-					<span className='text-white/70'>Гость</span>
+					<span className='text-white/70 text-sm font-bold'>Гость</span>
 				)}
 			</div>
 		</aside>
