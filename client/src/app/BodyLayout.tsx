@@ -2,26 +2,29 @@
 
 import Header from '@/components/layout/Header'
 import Sidebar from '@/components/layout/Sidebar'
-import { useSidebar } from '@/hooks/useSelectors'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const BodyLayout = ({
-	children,
+    children,
 }: Readonly<{
-	children: React.ReactNode
+    children: React.ReactNode
 }>) => {
 
-   const { isOpen } = useSidebar()
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [])
 
-	return (
-		<div className='bg-black1' style={{ display: 'grid', gridTemplateColumns: isOpen ? '1fr 5fr' : '0fr 5fr' }}>
-			<Sidebar />
-			<div className='bg-black2 text-white w-full'>
-				<Header />
-				{children}
-			</div>
-		</div>
-	)
+    return (
+        <div className='bg-black1 flex size-full'>
+            <div>
+                <Sidebar />
+            </div>
+            <div className='bg-black2 text-white w-full flex-1'>
+                <Header />
+                {children}
+            </div>
+        </div>
+    )
 }
 
 export default BodyLayout

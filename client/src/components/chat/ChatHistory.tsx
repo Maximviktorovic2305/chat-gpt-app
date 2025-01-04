@@ -77,7 +77,7 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 	}
 
 	return (
-		<div className='bg-inherit px-4 pt-4 rounded-lg max-h-screen overflow-y-auto max-w-[900px] mr-auto text-sm'>
+		<div className='bg-inherit flex flex-col mt-2 px-4 rounded-lg overflow-y-auto max-w-[900px] mr-auto text-sm'>
 			<div className='flex mb-3 items-center gap-1'>
 				<h2 className='font-bold text-sm text-gray1'>История переписки:</h2>
 				<HoverCard>

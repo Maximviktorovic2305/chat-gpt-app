@@ -4,9 +4,11 @@ import { useUser } from '@/hooks/useSelectors'
 import { CircleHelp, DoorClosed, DoorOpen } from 'lucide-react'
 import Link from 'next/link'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card'
+import { useActions } from '@/hooks/useActions'
 
 const Header = () => {
 	const { user } = useUser()
+	const { logout } = useActions()
 
 	return (
 		<div className='px-4 py-3 flex items-center justify-between'>
@@ -37,12 +39,12 @@ const Header = () => {
 					<DoorOpen />
 				</Link>
 			) : (
-				<Link
-					href='/auth/register'
+				<div
+				onClick={() => logout()}
 					className='flex items-center gap-3 cursor-pointer text-gray1 hover:text-red-500 duration-200'>
 					<span>Выйти</span>
 					<DoorClosed />
-				</Link>
+				</div>
 			)}
 		</div>
 	)
