@@ -1,5 +1,4 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 
 const Oferta = () => {
 	const titleStyle = 'font-semibold mt-6'
@@ -219,8 +218,10 @@ const Oferta = () => {
 					tatyana.kubryak@yandex.ru
 				</a>
 			</p>
-         {/* @ts-ignore */}
-         <a className="fixed text-gray1 hover:text-white duration-200 top-5 right-5" href="/">На главную</a>
+         <div className='fixed text-gray1 top-5 right-5 flex items-center gap-3'>
+				<a className='hover:text-white duration-200' href='/auth/register'>Регистрация</a>
+				<a className='hover:text-white duration-200' href='/'>На главную</a>
+			</div>
 		</div>
 	)
 }

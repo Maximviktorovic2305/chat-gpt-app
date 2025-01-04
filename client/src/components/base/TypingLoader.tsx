@@ -20,7 +20,7 @@ const TypingLoader: React.FC = () => {
   }, []);
 
   return (
-      <span className="text-[12px] text-gray1">Пишу ответ{dots}</span>
+      <span className="text-[12px] text-white/50">Пишу ответ{dots}</span>
   );
 };
 

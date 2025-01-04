@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { userSlice } from './user/user.slice';
 import chatSlice from './chat/chat.slice';
+import sidebarSlice from './sidebar/sidebar.slice';
 
 const store = configureStore({
   reducer: {
     user: userSlice.reducer,
-    chatSlice: chatSlice.reducer
+    chat: chatSlice.reducer,
+    sidebar: sidebarSlice.reducer
   },
 });   
 
