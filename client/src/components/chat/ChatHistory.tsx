@@ -3,15 +3,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChatMessage } from '@/types'
 import './ChatHistory.css'
-import { Copy, Check, CircleHelp } from 'lucide-react'
+import { Copy, Check, CircleHelp, Trash2Icon } from 'lucide-react'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { clearHistory } from '@/store/chat/chat.slice'
+import { useDispatch } from 'react-redux'
 
 interface ChatHistoryProps {
 	history: ChatMessage[]
 }
 
 const ChatHistory = ({ history }: ChatHistoryProps) => {
+	const dispatch = useDispatch()
 	const endOfMessagesRef = useRef<HTMLDivElement | null>(null)
 	const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
 
@@ -77,7 +80,7 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 	}
 
 	return (
-		<div className='bg-inherit flex flex-col mt-2 px-4 rounded-lg overflow-y-auto max-w-[900px] mr-auto text-sm'>
+		<div className='bg-inherit flex flex-col mt-2 max-h-[87vh] px-4 rounded-lg overflow-y-auto max-w-[900px] sm:mx-[10%] mr-auto text-sm'>
 			<div className='flex mb-3 items-center gap-1'>
 				<h2 className='font-bold text-sm text-gray1'>История переписки:</h2>
 				<HoverCard>
@@ -93,7 +96,7 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 					</HoverCardContent>
 				</HoverCard>
 			</div>
-			<div className='space-y-4'>
+			<div className='relative space-y-4 mb-2'>
 				{history.map((msg, index) => (
 					<div
 						key={index}
@@ -124,6 +127,13 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 					</div>
 				))}
 				<div ref={endOfMessagesRef} />
+				{history.length ? <div className='absolute -bottom-2 right-2 flex text-[10px] items-center gap-2 duration-200 text-neutral-700 cursor-pointer hover:text-neutral-400'>
+					Очистить историю
+					<Trash2Icon
+						onClick={() => dispatch(clearHistory())}
+						className='h-4 w-auto '
+					/>
+				</div> : <></>}
 			</div>
 		</div>
 	)
