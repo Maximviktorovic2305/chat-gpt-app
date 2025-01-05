@@ -56,7 +56,8 @@ export default {
     			black4: '#2A2A35',
     			black5: '#2F2F2F',
     			blue1: '#2212AB',
-    			gray1: '#59595B'
+    			gray1: '#59595B',
+    			gray2: '#7CA9BF'         
     		},
     		borderRadius: {
     			lg: 'var(--radius)',
