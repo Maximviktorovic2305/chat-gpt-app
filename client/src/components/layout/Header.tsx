@@ -11,7 +11,7 @@ const Header = () => {
 	const { logout } = useActions()
 
 	return (
-		<div className='px-4 py-3 flex items-center gap-2 justify-between sm:mx-[10%]'>
+		<div className='px-4 py-3 flex items-center gap-2 justify-between sm:mx-[8%]'>
          <div className='flex items-center gap-2'>
          <span className='text-white/50'>Нейросети Mistral AI</span>
 			<HoverCard>
