@@ -1,3 +1,5 @@
+import { ComponentType } from "react";
+
 export interface ChatMessage {
    role: 'user' | 'assistant';
    content: string;
@@ -38,4 +40,17 @@ export interface HomeForWhomItemsProps {
   title: string
   description: string
   id: number
+}               
+
+export interface InstructionsChatItemsProps {
+  title: string
+  text: string
+  id: number
+}                     
+
+export interface UsesItemsProps {
+  title: string
+  text: string
+  id: number
+  Icon: ComponentType;
 }

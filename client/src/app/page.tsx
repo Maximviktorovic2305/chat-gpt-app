@@ -1,7 +1,9 @@
 import HomeForWhom from '@/components/home/HomeForWhom'
 import HomeHeader from '@/components/home/HomeHeader'
 import HomeHero from '@/components/home/HomeHero'
+import HomeInstructions from '@/components/home/HomeInstructions'
 import HomeTryIt from '@/components/home/HomeTryIt'
+import HomeUses from '@/components/home/HomeUses'
 
 export default function Home() {
 	return (
@@ -9,9 +11,9 @@ export default function Home() {
 			<HomeHeader />
 			<HomeHero />
 			<HomeForWhom />
-			{/* <HomeDescription />
 			<HomeInstructions />
-			<HomeReviews/> */}
+			<HomeUses />
+			{/* <HomeReviews/> */}
 			<HomeTryIt />
 		</div>
 	)
