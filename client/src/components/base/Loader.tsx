@@ -4,8 +4,8 @@ const Loader = () => {
        <div className="loader"></div>
        <style jsx>{`
          .loader {
-           border: 3px solid rgba(255, 255, 255, 0.1); /* Цвет внешнего круга */
-           border-left-color: rgba(255, 255, 255, 0.6); /* Цвет внутреннего круга */
+           border: 3px solid rgba(124, 169, 191, 0.5); /* Цвет внешнего круга */
+           border-left-color: rgba(124, 169, 191); /* Цвет внутреннего круга */
            border-radius: 50%;
            width: 20px; /* Ширина и высота лоадера */
            height: 20px;
