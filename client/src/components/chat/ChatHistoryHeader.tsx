@@ -1,12 +1,11 @@
 import React from 'react'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card'
-import { CircleHelp, House } from 'lucide-react'
-import Link from 'next/link'
+import { CircleHelp} from 'lucide-react'
 
 const ChatHistoryHeader = () => {
 	return (
-		<div className='flex items-center gap-3 justify-between'>
-			<div className='flex mb-3 items-center gap-1'>
+		<div className='flex items-center gap-3 justify-between justify-self-center'>
+			<div className='flex items-center gap-1'>
 				<h2 className='font-bold text-sm text-gray1'>История переписки:</h2>
 				<HoverCard>
 					<HoverCardTrigger asChild>
@@ -21,12 +20,6 @@ const ChatHistoryHeader = () => {
 					</HoverCardContent>
 				</HoverCard>
 			</div>
-			<Link href='/'>
-				<div className='font-bold text-sm text-gray1 flex items-center gap-2 hover:text-white/50 duration-200'>
-					На главную
-					<House className='w-[18px] h-auto' />
-				</div>
-			</Link>
 		</div>
 	)
 }
