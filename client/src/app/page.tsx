@@ -13,7 +13,6 @@ export default function Home() {
 			<HomeForWhom />
 			<HomeInstructions />
 			<HomeUses />
-			{/* <HomeReviews/> */}
 			<HomeTryIt />
 		</div>
 	)

@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ChatMessage } from '@/types'
 import './ChatHistory.css'
-import { Copy, Check, CircleHelp, Trash2Icon } from 'lucide-react'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { Copy, Check, Trash2Icon } from 'lucide-react'
 import { clearHistory } from '@/store/chat/chat.slice'
 import { useDispatch } from 'react-redux'
+import ChatHistoryHeader from './ChatHistoryHeader'
+import { ChatMessage } from '@/types'
+import ChatMessageContent from './ChatMessageContent'
+import { copyToClipboard } from '@/utils/copyToClipboard'
 
 interface ChatHistoryProps {
 	history: ChatMessage[]
@@ -24,78 +25,17 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 		}
 	}, [history])
 
-	const copyToClipboard = (text: string, index: number) => {
-		navigator.clipboard
-			.writeText(text)
-			.then(() => {
-				setCopiedIndex(index)
-				setTimeout(() => {
-					setCopiedIndex(null)
-				}, 2000)
-			})
-			.catch(err => {
-				console.error('Ошибка при копировании: ', err)
-			})
-	}
-
-	const renderMessageContent = (content: string) => {
-		const codeBlockRegex = /```([\s\S]*?)```/g
-		const parts = content.split(codeBlockRegex)
-
-		return parts.map((part, index) => {
-			if (index % 2 === 1) {
-				// Это код
-				return (
-					<SyntaxHighlighter
-						key={index}
-						language='javascript'
-						style={{
-							container: {
-								background: '#282C34', // Цвет фона
-								borderRadius: '5px',
-								padding: '10px',
-							},
-							code: {
-								color: '#ffffff', // Цвет текста
-							},
-						}}
-						customStyle={{
-							background: '#282C34', // Установка цвета фона
-							color: '#ffffff', // Установка цвета текста
-							borderRadius: '5px',
-							padding: '10px',
-						}}>
-						{part}
-					</SyntaxHighlighter>
-				)
-			} else {
-				// Это текст
-				return (
-					<p key={index} className='mt-1'>
-						{part}
-					</p>
-				)
-			}
-		})
+	const handleCopy = async (text: string, index: number) => {
+		await copyToClipboard(text)
+		setCopiedIndex(index)
+		setTimeout(() => {
+			setCopiedIndex(null)
+		}, 2000)
 	}
 
 	return (
 		<div className='bg-inherit flex flex-col mt-2 max-h-[87vh] px-4 rounded-lg overflow-y-auto max-w-[900px] sm:mx-[10%] mr-auto text-sm'>
-			<div className='flex mb-3 items-center gap-1'>
-				<h2 className='font-bold text-sm text-gray1'>История переписки:</h2>
-				<HoverCard>
-					<HoverCardTrigger asChild>
-						<CircleHelp className='w-4 h-auto cursor-pointer text-gray1 hover:text-white duration-200' />
-					</HoverCardTrigger>
-					<HoverCardContent className='w-full max-w-[200px]'>
-						<div className='text-[12px] text-white/30 mb-1'>
-							История переписки
-						</div>
-						Нейросеть использует историю чата в качестве оперативной памяти для
-						генерации следующих ответов.
-					</HoverCardContent>
-				</HoverCard>
-			</div>
+			<ChatHistoryHeader />
 			<div className='relative space-y-4 mb-2'>
 				{history.map((msg, index) => (
 					<div
@@ -113,7 +53,7 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 						</strong>
 						{msg.role === 'assistant' && (
 							<button
-								onClick={() => copyToClipboard(msg.content, index)}
+								onClick={() => handleCopy(msg.content, index)}
 								className='absolute top-2 right-2 text-gray-400 hover:text-gray-200'
 								aria-label='Скопировать сообщение'>
 								{copiedIndex === index ? (
@@ -123,17 +63,18 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 								)}
 							</button>
 						)}
-						{renderMessageContent(msg.content)}
+						<ChatMessageContent content={msg.content} />
 					</div>
 				))}
 				<div ref={endOfMessagesRef} />
-				{history.length ? <div className='absolute -bottom-2 right-2 flex text-[10px] items-center gap-2 duration-200 text-neutral-700 cursor-pointer hover:text-neutral-400'>
-					Очистить историю
-					<Trash2Icon
+				{history.length ? (
+					<div
 						onClick={() => dispatch(clearHistory())}
-						className='h-4 w-auto '
-					/>
-				</div> : <></>}
+						className='absolute -bottom-2 right-2 flex text-[10px] items-center gap-2 duration-200 text-neutral-700 cursor-pointer hover:text-neutral-400'>
+						Очистить историю
+						<Trash2Icon className='h-4 w-auto ' />
+					</div>
+				) : null}
 			</div>
 		</div>
 	)
