@@ -5,6 +5,7 @@ import { CircleHelp, DoorClosed, DoorOpen, House } from 'lucide-react'
 import Link from 'next/link'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../ui/hover-card'
 import { useActions } from '@/hooks/useActions'
+import { ROUTES } from '@/constants/routes'
 
 const Header = () => {
 	const { user } = useUser()
@@ -32,7 +33,7 @@ const Header = () => {
 			</div>
 			{!user ? (
 				<div className='flex items-center gap-3'>
-					<Link className='flex items-center border-r-2 border-gray1 pr-3' href='/'>
+					<Link className='flex items-center border-r-2 border-gray1 pr-3' href={ROUTES.home}>
 						<div className='font-bold text-sm text-gray1 flex items-center gap-2 hover:text-white/80 duration-200'>
 							<span className='max-sm:hidden'>На главную</span>
 							<House className='w-5 h-auto' />
@@ -40,7 +41,7 @@ const Header = () => {
 					</Link>
 
 					<Link
-						href='/auth/register'
+						href={ROUTES.register}
 						className='flex items-center gap-2 cursor-pointer text-gray1 hover:text-white/80 duration-200'>
 						<span className='text-sm'>Войти</span>
 						<DoorOpen />
@@ -48,7 +49,7 @@ const Header = () => {
 				</div>
 			) : (
 				<div>
-					<Link className='flex items-center' href='/'>
+					<Link className='flex items-center' href={ROUTES.home}>
 						<div className='font-bold text-sm text-gray1 flex items-center gap-2 hover:text-white/80 duration-200'>
 							<span className='max-sm:hidden'>На главную</span>
 							<House className='w-5 h-auto' />

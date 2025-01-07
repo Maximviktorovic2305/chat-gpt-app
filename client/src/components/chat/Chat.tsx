@@ -7,6 +7,7 @@ import { useChat } from '@/hooks/useSelectors'
 import { addMessage } from '@/store/chat/chat.slice'
 import ChatHistory from './ChatHistory'
 import ChatInput from './ChatInput'
+import ChatOpportunities from './ChatOpportunities'
 
 const Chat = () => {
 	const dispatch = useDispatch()
@@ -22,7 +23,10 @@ const Chat = () => {
 	return (
 		<div className='px-4 pb-4 flex flex-col justify-between w-full gap-7 min-h-[90vh] overflow-y-auto'>
 			<ChatHistory history={history} />
-			<ChatInput isLoading={isLoading} onMessageSend={handleMessageSend} />
+			<div>
+				{!history.length && <ChatOpportunities />}
+				<ChatInput isLoading={isLoading} onMessageSend={handleMessageSend} />
+			</div>
 		</div>
 	)
 }

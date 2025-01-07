@@ -18,8 +18,8 @@ const Page = () => {
 		formState: { errors },
 	} = useForm<IRegisterForm>()
 	const [registerError, setRegisterError] = useState<string | null>(null)
-  const { register: registerForm } = useActions()
-  const router = useRouter()
+	const { register: registerForm } = useActions()
+	const router = useRouter()
 
 	const onSubmit = async (data: IRegisterForm) => {
 		setRegisterError('')
@@ -39,14 +39,17 @@ const Page = () => {
 	}
 
 	return (
-		<div className='size-full min-h-screen text-muted fixed flex text-white items-center justify-center' >
-			<div className='fixed bg-secondary top-0 px-3 left-0 right-0 bottom-0' style={{ backgroundImage: 'url(/fon.jpg)', backgroundSize: 'cover' }}>
+		<div className='size-full min-h-screen text-muted fixed flex text-white items-center justify-center'>
+			<div
+				className='fixed bg-secondary top-0 px-3 left-0 right-0 bottom-0'
+				style={{ backgroundImage: 'url(/fon.jpg)', backgroundSize: 'cover' }}>
 				<div className='flex items-center justify-center shadow-md shadow-primary mt-[10%] rounded-lg max-w-xl p-5 mx-auto bg-slate-800'>
 					<form
-						className='w-full max-w-[400px] flex flex-col gap-3' 
-						
+						className='w-full max-w-[400px] flex flex-col gap-3'
 						onSubmit={handleSubmit(onSubmit)}>
 						<span className='text-center text-xl'>Регистрация</span>
+
+						{/* Имя */}
 						<div className='flex flex-col gap-1'>
 							<Label className='text-[12px]' htmlFor='name'>
 								Имя
@@ -64,6 +67,8 @@ const Page = () => {
 								</span>
 							)}
 						</div>
+
+						{/* Почта */}
 						<div className='flex flex-col gap-1'>
 							<Label className='text-[12px]' htmlFor='email'>
 								Почта
@@ -87,6 +92,8 @@ const Page = () => {
 								</span>
 							)}
 						</div>
+
+						{/* Пароль */}
 						<div className='flex flex-col gap-1'>
 							<Label className='text-[12px]' htmlFor='password'>
 								Пароль
@@ -116,13 +123,28 @@ const Page = () => {
 						<div className='text-[12px] text-center'>
 							Есть аккаунт?{' '}
 							<Link
-								href={'/auth/login'}
+								href={ROUTES.login}
 								className='text-blue-500 hover:text-blue-700 duration-200 cursor-pointer underline'>
 								Войти
 							</Link>
 						</div>
 
-						<div className='text-[11px] text-center'>Создавая аккаунт вы соглашаетесь с нашими <Link className='underline cursor-pointer text-blue-500 hover:text-blue-700 duration-200' href="/oferta">Офертой</Link> и <Link className='underline cursor-pointer text-blue-500 hover:text-blue-700 duration-200' href="/private-policy">Политикой конфиденциальности</Link>.</div>
+						{/* Политика конфиденциальности    */}
+						<div className='text-[11px] text-center'>
+							Создавая аккаунт вы соглашаетесь с нашими{' '}
+							<Link
+								className='underline cursor-pointer text-blue-500 hover:text-blue-700 duration-200'
+								href={ROUTES.oferta}>
+								Офертой
+							</Link>{' '}
+							и{' '}
+							<Link
+								className='underline cursor-pointer text-blue-500 hover:text-blue-700 duration-200'
+								href={ROUTES.privatePolicy}>
+								Политикой конфиденциальности
+							</Link>
+							.
+						</div>
 					</form>
 				</div>
 			</div>

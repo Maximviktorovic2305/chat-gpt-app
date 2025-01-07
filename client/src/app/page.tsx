@@ -1,3 +1,4 @@
+import HomeFooter from '@/components/home/HomeFooter'
 import HomeForWhom from '@/components/home/HomeForWhom'
 import HomeHeader from '@/components/home/HomeHeader'
 import HomeHero from '@/components/home/HomeHero'
@@ -14,6 +15,7 @@ export default function Home() {
 			<HomeInstructions />
 			<HomeUses />
 			<HomeTryIt />
+			<HomeFooter />
 		</div>
 	)
 }
