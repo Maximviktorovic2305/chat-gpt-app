@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-html-link-for-pages */
+import { ROUTES } from '@/constants/routes'
 import React from 'react'
 
 const PrivacyPolicy: React.FC = () => {
@@ -194,8 +194,8 @@ const PrivacyPolicy: React.FC = () => {
 				.
 			</p>
 			<div className='fixed text-gray1 top-5 right-5 flex items-center gap-3'>
-				<a className='hover:text-white duration-200' href='/auth/register'>Регистрация</a>
-				<a className='hover:text-white duration-200' href='/'>На главную</a>
+				<a className='hover:text-white duration-200' href={ROUTES.register}>Регистрация</a>
+				<a className='hover:text-white duration-200' href={ROUTES.home}>На главную</a>
 			</div>
 		</div>
 	)

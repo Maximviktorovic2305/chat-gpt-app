@@ -5,23 +5,29 @@ import { Webhook } from 'lucide-react'
 import ButtonTryIt from '../base/ButtonTryIt'
 import { Button } from '../ui/button'
 import Link from 'next/link'
+import { ROUTES } from '@/constants/routes'
 
 const HomeHeader = () => {
 	const [visible, setVisible] = useState(true)
+	const [isAtTop, setIsAtTop] = useState(true)
 	const lastScrollY = useRef(0)
 
 	const handleScroll = useCallback(() => {
 		const currentScrollY = window.scrollY
 
 		if (currentScrollY <= 0) {
-			setVisible(true) // Если прокрутка в самом верху, показываем заголовок
-		} else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
-			setVisible(false) // Прокрутка вниз
+			setVisible(true)
+			setIsAtTop(true) // Если прокрутка в самом верху
 		} else {
-			setVisible(true) // Прокрутка вверх
+			setIsAtTop(false) // Находится не на верху
+			if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+				setVisible(false) // Прокрутка вниз
+			} else {
+				setVisible(true) // Прокрутка вверх
+			}
 		}
 
-		lastScrollY.current = currentScrollY // Обновление последнего положения прокрутки
+		lastScrollY.current = currentScrollY
 	}, [])
 
 	useEffect(() => {
@@ -33,7 +39,7 @@ const HomeHeader = () => {
 
 	return (
 		<header
-			className={`fixed z-10 top-0 left-0 right-0 px-[3%] bg-transparent mx-auto text-white/70 py-3 flex gap-3 items-center justify-between transition-transform duration-300 ${
+			className={`fixed z-30 top-0 left-0 right-0 px-[3%] ${!isAtTop ? 'backdrop-blur-sm' : ''} bg-transparent mx-auto text-white/70 py-3 flex gap-3 items-center justify-between transition-transform duration-300 ${
 				visible ? 'translate-y-0' : '-translate-y-full'
 			}`}>
 			<div className='flex items-center gap-3'>
@@ -41,10 +47,8 @@ const HomeHeader = () => {
 				<span>Нейросеть онлайн</span>
 			</div>
 			<div className='flex justify-self-end'>
-				<Link className='max-sm:hidden' href='/chat'>
-					<ButtonTryIt size='s' />
-				</Link>
-				<Link href='/auth/login'>
+				<ButtonTryIt className='max-sm:hidden' size='s' />
+				<Link href={ROUTES.login}>
 					<Button
 						variant='ghost'
 						className='text-white/70 hover:bg-transparent hover:text-white'>

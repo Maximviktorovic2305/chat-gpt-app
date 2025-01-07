@@ -4,7 +4,7 @@ interface Props {
 	isOpen?: boolean
 }
 
-const NeonLogo = ({ isOpen }: Props) => {
+const NeonLogo = ({ isOpen = true }: Props) => {
 	return (
 		<iframe
 			className={`mb-10 transition-opacity duration-300 ${

@@ -54,3 +54,10 @@ export interface UsesItemsProps {
   id: number
   Icon: ComponentType;
 }
+
+export interface OpportunitiesCardsProps {
+  title: string
+  text: string
+  id: number
+  Icon: ComponentType;
+}

@@ -94,7 +94,7 @@ const Page = () => {
             <div className='text-[12px] text-center'>
               Нет аккаунта?{' '}
               <Link
-                href={'/auth/register'}
+                href={ROUTES.register}
                 className='text-blue-400 hover:text-blue-500 duration-200 cursor-pointer underline'>
                 Зарегистироваться
               </Link>
