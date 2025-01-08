@@ -15,9 +15,7 @@ const BodyLayout = ({
 
 	return (
 		<div className='bg-black1 flex size-full'>
-			<div>
-				<Sidebar />
-			</div>
+			<Sidebar />
 			<div className='bg-black2 text-white w-full flex-1'>
 				<Header />
 				{children}

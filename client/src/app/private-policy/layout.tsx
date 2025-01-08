@@ -4,8 +4,8 @@ export default function PolicyLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang='en'>
-			<body className='bg-black3 text-white'>{children}</body>
-		</html>
+		<div lang='en'>
+			<div className='bg-black3 text-white'>{children}</div>
+		</div>
 	)
 }

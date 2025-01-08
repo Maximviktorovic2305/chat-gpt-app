@@ -12,10 +12,8 @@ export default function HomeLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<html lang='en'>
-				<body>
-					<BodyLayout>{children}</BodyLayout>
-				</body>
-		</html>
+		<div lang='en'>
+			<BodyLayout>{children}</BodyLayout>
+		</div>
 	)
 }
