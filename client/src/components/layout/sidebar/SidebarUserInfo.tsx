@@ -8,7 +8,7 @@ interface Props {
 const SidebarUserInfo = ({ isOpen }: Props) => {
 	const { user } = useUser() || { user: { name: 'Гость' } }
 	return (
-		<div
+		<section
 			className={`flex justify-start mb-5 items-center gap-3 px-5 transition-transform duration-300 ${
 				isOpen
 					? 'transform translate-x-0 opacity-100'
@@ -20,7 +20,7 @@ const SidebarUserInfo = ({ isOpen }: Props) => {
 			) : (
 				<span className='text-white/70 text-sm font-bold'>Гость</span>
 			)}
-		</div>
+		</section>
 	)
 }
 

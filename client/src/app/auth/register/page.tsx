@@ -30,7 +30,7 @@ const Page = () => {
 			if (response.error && response.error.code === 'ERR_BAD_REQUEST') {
 				setRegisterError('Данная почта уже занята')
 			} else {
-				router.push(ROUTES.home)
+				router.push(ROUTES.chat)
 				router.refresh()
 			}
 		} catch (error) {
@@ -131,13 +131,13 @@ const Page = () => {
 
 						{/* Политика конфиденциальности    */}
 						<div className='text-[11px] text-center'>
-							Создавая аккаунт вы соглашаетесь с нашими{' '}
-							<Link
+							Создавая аккаунт вы соглашаетесь с нашей{' '}
+							{/* <Link
 								className='underline cursor-pointer text-blue-500 hover:text-blue-700 duration-200'
 								href={ROUTES.oferta}>
 								Офертой
 							</Link>{' '}
-							и{' '}
+							и{' '} */}
 							<Link
 								className='underline cursor-pointer text-blue-500 hover:text-blue-700 duration-200'
 								href={ROUTES.privatePolicy}>

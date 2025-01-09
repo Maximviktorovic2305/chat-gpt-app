@@ -8,7 +8,7 @@ interface Props {
 
 const HomeInstructionsItem = ({ id, title, text }: Props) => {
 	return (
-		<div className='flex justify-center py-4'>
+		<section className='flex justify-center py-4'>
 			<div className='flex items-center max-w-[900px] w-full'>
 				<div className='flex items-center gap-5 w-full'>
 					<div className='circle hover:bg-gray2 cursor-pointer duration-200'>{id}</div>
@@ -31,7 +31,7 @@ const HomeInstructionsItem = ({ id, title, text }: Props) => {
 					text-align: center;
 				}
 			`}</style>
-		</div>
+		</section>
 	)
 }
 

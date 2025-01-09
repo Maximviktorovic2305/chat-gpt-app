@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import localFont from 'next/font/local'
 import './globals.css'
 import Providers from '@/providers/Providers'
@@ -14,11 +13,6 @@ const geistMono = localFont({
 	weight: '100 900',
 })
 
-export const metadata: Metadata = {
-	title: 'Gpt App',
-	description: 'Gpt chat application for all',
-}
-
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -26,7 +20,7 @@ export default function RootLayout({
 }>) {
 
 	return (
-		<html lang='en'>
+		<html lang='ru'>
 			<Providers>
 				<body
 					className={`${geistSans.variable} ${geistMono.variable} bg-[#141415] overflow-x-hidden antialiased`}
