@@ -7,7 +7,7 @@ import { HOME_FOR_WHOM_ITEMS } from '@/constants/home-for-whom-items'
 const HomeForWhom = () => {
 	return (
 		<section className='max-w-[700px] mx-auto flex mt-10 flex-col gap-5'>
-			<div className='text-center text-2xl'>Наш сервис подходит для всех</div>
+			<h2 className='text-center text-2xl'>Наш сервис подходит для всех</h2>
 			<Accordion type='single' collapsible className='w-full'>
 				{HOME_FOR_WHOM_ITEMS.map(item => (
 					<HomeForWhomItem

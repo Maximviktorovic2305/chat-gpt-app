@@ -1,9 +1,12 @@
 import { ROUTES } from '@/constants/routes'
 import React from 'react'
 
+
 const PrivacyPolicy: React.FC = () => {
 	const titleStyle = 'font-semibold mt-6'
 	const blockStyle = 'font-semibold mt-4'
+	const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS
+	
 
 	return (
 		<div className='bg-black3 p-6 text-base mt-5 max-w-[900px] mx-auto'>
@@ -17,8 +20,7 @@ const PrivacyPolicy: React.FC = () => {
 				соответствии с требованиями Федерального закона от 27.07.2006. № 152-ФЗ
 				«О персональных данных» (далее — Закон о персональных данных) и
 				определяет порядок обработки персональных данных и меры по обеспечению
-				безопасности персональных данных, предпринимаемые ИП Кубряк Татьяна
-				Алексеевна (далее — Оператор).
+				безопасности персональных данных, предпринимаемые платформой Contact (далее — Оператор).
 			</p>
 
 			<p className='mt-2'>
@@ -31,8 +33,8 @@ const PrivacyPolicy: React.FC = () => {
 				1.2. Настоящая политика Оператора в отношении обработки персональных
 				данных (далее — Политика) применяется ко всей информации, которую
 				Оператор может получить о посетителях веб-сайта{' '}
-				<a href='https://proxyai.pro' className='text-blue-600 hover:underline'>
-					https://proxyai.pro
+				<a href={site} className='text-blue-600 hover:underline'>
+					{site}
 				</a>
 				.
 			</p>
@@ -173,23 +175,13 @@ const PrivacyPolicy: React.FC = () => {
 			</p>
 
 			<h2 className={titleStyle}>12. Заключительные положения</h2>
-			<p className='mt-2'>
-				Пользователь может получить любые разъяснения по интересующим вопросам,
-				обратившись к Оператору с помощью электронной почты{' '}
-				<a
-					href='mailto:tatyana.kubryak@yandex.ru'
-					className='text-blue-600 hover:underline'>
-					tatyana.kubryak@yandex.ru
-				</a>
-				.
-			</p>
 			<p className='mt-4 text-gray-600 border-t border-gray-300 pt-4'>
 				Актуальная версия Политики в отношении обработки персональных данных в
 				свободном доступе расположена в сети Интернет по адресу{' '}
 				<a
-					href='https://proxyai.pro/policy/'
+					href={`${site}/private-policy`}
 					className='text-blue-600 hover:underline'>
-					https://proxyai.pro/policy/
+					{site}/{ROUTES.privatePolicy}
 				</a>
 				.
 			</p>

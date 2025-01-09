@@ -4,7 +4,7 @@ export default function OfertaLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<div lang='en'>
+		<div lang='ru'>
 			<div className='bg-black3 text-white'>{children}</div>
 		</div>
 	)

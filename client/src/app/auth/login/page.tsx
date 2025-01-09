@@ -26,7 +26,7 @@ const Page = () => {
 				if (response.error && response.error.code === "ERR_BAD_REQUEST") {
 					setLoginError('Неверный email или пароль')
 				} else {
-					router.push(ROUTES.home)
+					router.push(ROUTES.chat)
 					router.refresh()
 				}
 		} catch (error) {   

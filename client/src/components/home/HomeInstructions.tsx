@@ -4,7 +4,7 @@ import HomeInstructionsItem from './HomeInstructionsItem'
 const HomeInstructions = () => {
 	return (
 		<div className='mt-20'>
-         <div className='text-center text-2xl mb-5'>Как использовать ChatGPT и Mistral AI?</div>
+         <h2 className='text-center text-2xl mb-5'>Как использовать нейросеть Mistral AI?</h2>
 			{INSTRUCTION_CHAT_ITEMS.map(item => (
 				<HomeInstructionsItem
 					id={item.id}
