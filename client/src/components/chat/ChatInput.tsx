@@ -46,7 +46,7 @@ const ChatInput = ({ isLoading, onMessageSend }: ChatInputProps) => {
                     placeholder='Введите ваш вопрос'
                     className=' min-h-10 placeholder:text-[12px] '
                 />
-                <Button disabled={isLoading} type='submit'>
+                <Button disabled={isLoading} type='submit' className='bg-black4'>
                     {isLoading ? <Loader /> : 'Отправить'}
                 </Button>
             </form>
