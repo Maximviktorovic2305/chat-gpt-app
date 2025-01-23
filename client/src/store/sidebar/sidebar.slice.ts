@@ -1,12 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';         
 
 interface SidebarState {
-  isOpen: boolean;
+  isOpen: boolean
 }
 
 const initialState: SidebarState = {
    isOpen: true
 };
+
 
 const sidebarSlice = createSlice({
   name: 'sidebar',

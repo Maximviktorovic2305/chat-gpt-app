@@ -1,7 +1,7 @@
 'use client'
 
 import { useChat, useSidebar } from '@/hooks/useSelectors'
-import React from 'react'
+import React, { useEffect } from 'react'
 import SidebarToggleBtn from './SidebarToggleBtn'
 import NeonLogo from './NeonLogo'
 import SidebarMistralText from './SidebarMistralText'
@@ -13,6 +13,10 @@ const Sidebar = () => {
 	const { isOpen } = useSidebar()
 	const { history } = useChat()
 	const firstQuestion = history[0]?.content
+
+	useEffect(() => {
+		window.scrollTo(0, 0)
+	}, [])
 
 	return (
 		<aside
