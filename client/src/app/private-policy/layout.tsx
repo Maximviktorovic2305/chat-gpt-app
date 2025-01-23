@@ -16,7 +16,8 @@ export default function PolicyLayout({
 }>) {
 
 	return (
-		<div>
+		<div className="bg-black3">
+			<div className='bg-black3 fixed inset-0 h-5 text-white' />
 			<div className='bg-black3 text-white'>{children}</div>
 		</div> 
 	)
