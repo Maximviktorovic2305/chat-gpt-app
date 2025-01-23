@@ -42,7 +42,7 @@ export default function HomeLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<div lang='ru'>
+		<div lang='ru' className='size-full'>
 			<BodyLayout>{children}</BodyLayout>
 		</div>
 	)

@@ -20,10 +20,10 @@ export default function RootLayout({
 }>) {
 
 	return (
-		<html lang='ru'>
+		<html lang='ru' className='size-full'>
 			<Providers>
 				<body
-					className={`${geistSans.variable} ${geistMono.variable} bg-[#141415] overflow-x-hidden antialiased`}
+					className={`${geistSans.variable} ${geistMono.variable} bg-[#141415] size-full antialiased`}
 					>
 					{children}
 				</body>
