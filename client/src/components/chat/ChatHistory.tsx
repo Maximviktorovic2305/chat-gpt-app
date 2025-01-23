@@ -34,7 +34,7 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 	}
 
 	return (
-		<div className='bg-inherit flex flex-col mt-2 max-h-[87vh] px-4 rounded-lg overflow-y-auto max-w-[900px] sm:mx-[10%] mr-auto text-sm'>
+		<div className='bg-inherit flex flex-col mt-2 max-h-[87vh] px-4 rounded-lg overflow-y-auto max-w-[900px] sm:mx-[10%] self-center text-sm'>
 			<ChatHistoryHeader />
 			<div className='relative mt-2 space-y-3 mb-2'>
 				{history.map((msg, index) => (
