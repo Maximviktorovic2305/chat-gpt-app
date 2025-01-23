@@ -1,9 +1,11 @@
-import useDeviceType from './useDeviceType'
+import useDeviceType from "./useDeviceType"
+
 
 export const useInitialSidebarState = () => {
-	const deviceType = useDeviceType()
+   const deviceType = useDeviceType()         
+    
+   if (typeof window !== 'undefined') {
+      return deviceType === 'mobile' ? false : true
+   }
 
-	if (typeof window !== 'undefined') {
-		return deviceType === 'mobile' ? false : true
-	}
 }
