@@ -26,7 +26,7 @@ const BodyLayout = ({
 	 }, [deviceType, dispatch]);
 
 	return (
-		<div className='size-full bg-black1 flex items-center'>
+		<div className='size-full bg-black1 overflow-y-hidden flex items-center'>
 			<Sidebar />
 			<div className='bg-black2 text-white size-full w-full'>
 				<Header />
