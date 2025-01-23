@@ -14,9 +14,9 @@ const BodyLayout = ({
 	}, [])
 
 	return (
-		<div className='bg-black1 flex size-full'>
+		<div className='size-full bg-black1 flex items-center'>
 			<Sidebar />
-			<div className='bg-black2 text-white w-full flex-1'>
+			<div className='bg-black2 text-white size-full min-h-screen w-full'>
 				<Header />
 				{children}
 			</div>
