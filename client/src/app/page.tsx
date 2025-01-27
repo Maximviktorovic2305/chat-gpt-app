@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
 	return (
-		<div className='relative h-full bg-[#141415] text-white/70 min-h-screen w-full flex shrink px-[2%] mx-auto'>
+		<div className='relative h-full bg-[#141415] text-white/70 min-h-screen w-full px-[2%] mx-auto'>
 			<HomeHeader />
 			<HomeHero />
 			<HomeForWhom />
