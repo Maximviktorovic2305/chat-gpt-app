@@ -4,6 +4,5 @@ export const ROUTES = {
 	chat: '/chat',
 	register: '/auth/register',
 	oferta: '/oferta',
-	privatePolicy: '/private-policy'
-	
+	privatePolicy: '/private-policy',
 }

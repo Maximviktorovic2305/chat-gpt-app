@@ -48,8 +48,16 @@ const Page = () => {
 				className='fixed bg-secondary top-0 px-3 left-0 right-0 bottom-0'
 				style={{ backgroundImage: 'url(/fon.jpg)', backgroundSize: 'cover' }}>
 				<div className='flex items-center font-bold gap-3 pt-3 pr-3 justify-self-end'>
-					<Link href={ROUTES.home} className='text-muted duration-200 hover:text-primary'>На главную</Link>
-					<Link href={ROUTES.chat} className='text-muted duration-200 hover:text-primary'>Чат</Link>
+					<Link
+						href={ROUTES.home}
+						className='text-muted duration-200 hover:text-primary'>
+						На главную
+					</Link>
+					<Link
+						href={ROUTES.chat}
+						className='text-muted duration-200 hover:text-primary'>
+						Чат
+					</Link>
 				</div>
 				<div className='flex items-center justify-center shadow-md shadow-primary mt-[10%] rounded-lg max-w-xl p-5 mx-auto bg-slate-800'>
 					<form
@@ -143,19 +151,12 @@ const Page = () => {
 								onCheckedChange={() => setCheckedBox((prev) => !prev)}
 							/>
 							<div className='text-[11px]'>
-								Создавая аккаунт, Вы соглашаетесь с нашей{' '}
-								{/* <Link
-								className='underline cursor-pointer text-blue-500 hover:text-blue-700 duration-200'
-								href={ROUTES.oferta}>
-								Офертой
-							</Link>{' '}
-							и{' '} */}
+								Создавая аккаунт, я соглашаюсь с{' '}
 								<Link
 									className='underline cursor-pointer text-blue-500 hover:text-blue-700 duration-200'
 									href={ROUTES.privatePolicy}>
 									Политикой конфиденциальности
 								</Link>
-								.
 							</div>
 						</div>
 					</form>
