@@ -4,12 +4,12 @@ import axios from "axios";
 import { errorCatch, getContentType } from "./api.helper";
 
 export const axiosClassic = axios.create({
-   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
+   baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}/api`,
    headers: getContentType(),
 });
 
 export const instanse = axios.create({
-   baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
+   baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}/api`,
    headers: getContentType(),
 });   
 
