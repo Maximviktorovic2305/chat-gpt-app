@@ -27,20 +27,23 @@ export const logout = createAsyncThunk('auth/logout',
     }
 )   
 
-export const checkAuth = createAsyncThunk<IAuthResponse>('auth/check-auth',   
-    async (_, thunkApi) => {
-        try {
-            const response = await AuthService.getNewTokens()   
-            return response
-        } catch (error) {
-            if(errorCatch(error) === 'jwt expired') {
-                thunkApi.dispatch(logout())
-            }   
+export const checkAuth = createAsyncThunk<IAuthResponse, void, { rejectValue: unknown }>(
+  'auth/check-auth',
+  async (_, thunkApi) => {
+    try {
+      const response = await AuthService.getNewTokens();
+      return response;
+    } catch (error) {
+      const errorMessage = errorCatch(error);
 
-            return thunkApi.rejectWithValue(error)
-        }
+      if (errorMessage === 'jwt expired') {
+        thunkApi.dispatch(logout());
+      }
+
+      return thunkApi.rejectWithValue(errorMessage || 'Authentication failed');
     }
-)         
+  }
+);        
 
 export const getProfile = createAsyncThunk<IAuthResponse>('auth/me',   
     async (_, thunkApi) => {
