@@ -1,3 +1,5 @@
+'use client'
+
 import { clearHistory } from '@/store/chat/chat.slice'
 import { DotIcon, Trash2Icon } from 'lucide-react'
 import { useDispatch } from 'react-redux'

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 'use client'
 
 import { ACCESS_TOKEN, REFRESH_TOKEN } from '@/constants/token.constants'
@@ -16,12 +15,10 @@ export const removeFromStorage = () => {
 }
 
 export const getAccessToken = () => {
-	// @ts-ignore
 	const accessToken = localStorage.getItem(ACCESS_TOKEN)
 	return accessToken || null
 }
 export const getRefreshToken = () => {
-	// @ts-ignore
 	const refreshToken = localStorage.getItem(REFRESH_TOKEN)
 	return refreshToken || null
 }

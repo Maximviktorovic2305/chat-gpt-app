@@ -1,0 +1,169 @@
+name: CI/CD Pipeline for Chat-GPT App
+
+on:
+  push:
+    branches:
+      - master # Основная ветка в git
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.19.4' # Укажите версию Node.js, которую вы используете
+
+    # --- CI для NestJS Backend ---
+    - name: Install backend dependencies
+      working-directory: ./server # Путь к папке с NestJS бэкендом
+      run: npm ci
+
+    - name: Build backend
+      working-directory: ./server
+      run: npm run build
+
+    # --- CI для Next.js Frontend ---
+    - name: Install frontend dependencies
+      working-directory: ./client # Путь к папке с Next.js фронтендом
+      run: npm ci
+
+    - name: Build frontend
+      working-directory: ./client
+      run: npm run build
+
+  deploy:
+    needs: build # Этот job запускается только после успешного завершения job 'build'
+    runs-on: ubuntu-latest
+    environment: Production # Опционально, для управления секретами и окружениями
+    
+    steps:
+    - name: Deploy to server
+      uses: appleboy/ssh-action@master # Удобный action для SSH
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          set -e # Выход немедленно, если команда завершается с ненулевым статусом.
+
+          # Добавление ключа хоста GitHub в known_hosts на удаленном сервере (для безопасности, хотя репо публичный)
+          echo "Adding GitHub.com to known_hosts on the remote server..."
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts # Убедимся, что права доступа корректны
+
+          # --- Установка PATH для Node.js, npm, npx и PM2 ---
+          # Это очень важно, так как в неинтерактивной SSH-сессии PATH может быть неполным.
+          # Используйте путь, который вы получили из `echo $PATH` для пользователя `max`.
+          export PATH="/home/max/.nvm/versions/node/v20.19.4/bin:$PATH"
+          # Гарантируем, что PM2 установлен и доступен
+          echo "Ensuring PM2 is installed globally..."
+          npm install -g pm2 # Установка PM2 глобально
+          echo "Verifying pm2 command after global install:"
+          which pm2 || echo "pm2 not found after global install" # Проверка после установки
+          
+          # Директории приложения на сервере (НОВЫЙ ПУТЬ ДЛЯ ЭТОГО ПРОЕКТА)
+          APP_DIR="/home/max/chat-gpt-app" 
+          BACKEND_DIR="${APP_DIR}/server"
+          FRONTEND_DIR="${APP_DIR}/client"
+          # URL РЕПОЗИТОРИЯ (публичный, используем HTTPS)
+          REPO_URL="https://github.com/Maximviktorovic2305/chat-gpt-app.git" 
+          
+          echo "Ensuring application directory exists: $APP_DIR"
+          mkdir -p $APP_DIR
+
+          # Клонирование или обновление репозитория
+          echo "Checking repository status on server..."
+          if [ -d "$APP_DIR/.git" ]; then
+            echo "Repository already exists. Cleaning local changes and pulling latest..."
+            cd $APP_DIR
+            git reset --hard HEAD # Сброс всех локальных изменений
+            git clean -fdx # Удаление всех неотслеживаемых файлов и директорий
+            git pull origin master # Получение последних изменений (использует HTTPS, т.к. репо публичный)
+          else
+            echo "Repository does not exist. Cloning..."
+            # Если директория существует, но не является репозиторием, очищаем ее
+            if [ -d "$APP_DIR" ] && [ "$(ls -A $APP_DIR)" ]; then
+                echo "Directory exists but is not a git repo. Cleaning contents before cloning."
+                rm -rf $APP_DIR/* # ВНИМАНИЕ: Это удалит все в APP_DIR!
+            fi
+            git clone $REPO_URL $APP_DIR
+          fi
+          
+          cd $APP_DIR # Убедитесь, что мы в корневой директории приложения после клонирования/обновления 
+          echo "Current application root directory: $(pwd)"
+          ls -la # Вывод содержимого корневой директории приложения
+
+          # --- Действия для NestJS Backend ---
+          echo "Deploying NestJS Backend..."
+          cd $BACKEND_DIR
+          echo "Current directory for backend: $(pwd)"
+          ls -la # Проверка содержимого директории бэкенда
+
+          # Очистка node_modules и папки сборки для чистой установки/сборки
+          echo "Cleaning backend node_modules and dist directory..."
+          rm -rf node_modules dist # Явно удаляем эти папки
+          ls -la # Проверяем, что папки удалены
+
+          echo "PATH before npm install (backend): $PATH" # Отладка PATH
+          which npm # Отладка расположения npm
+          which npx # Отладка расположения npx
+          echo "Installing backend dependencies..."
+          npm cache clean --force || true # Очистка кэша npm
+          npm install # Установка всех зависимостей (включая devDependencies для сборки)
+          echo "Contents of node_modules/.bin (backend):" # Отладка node_modules/.bin
+          ls -la node_modules/.bin || true # Используем || true, чтобы скрипт не падал, если директория пуста
+          echo "Building backend..."
+          npm run build # Сборка бэкенда
+
+          # --- Действия для Prisma (если используется) ---
+          # Если ваш NestJS бэкенд использует Prisma, раскомментируйте следующие строки:
+          echo "Running Prisma generate..."
+          npx prisma generate
+          echo "Running Prisma db push..."
+          npx prisma db push # ВНИМАНИЕ: Для продакшена обычно рекомендуется 'prisma migrate deploy'
+
+          # Перезапуск NestJS приложения (используя PM2)
+          echo "Stopping/deleting old backend PM2 process (chat-gpt-app-server)..."
+          pm2 stop chat-gpt-app-server || true # Остановить, если уже запущен
+          pm2 delete chat-gpt-app-server || true # Удалить старую конфигурацию
+          echo "Starting new backend PM2 process (chat-gpt-app-server)..."
+          pm2 start ecosystem.config.js --env production --name chat-gpt-app-server # Запустить новую
+          pm2 save # Сохранить состояние PM2, чтобы PM2 запускал процессы после перезагрузки сервера
+
+          # --- Действия для Next.js Frontend ---
+          echo "Deploying Next.js Frontend..."
+          cd $FRONTEND_DIR
+          echo "Current directory for frontend: $(pwd)"
+          ls -la # Проверка содержимого директории фронтенда
+
+          # Очистка node_modules и папки сборки для чистой установки/сборки
+          echo "Cleaning frontend node_modules and dist directory..."
+          rm -rf node_modules dist # Явно удаляем эти папки
+          ls -la # Проверяем, что папки удалены
+
+          echo "PATH before npm install (frontend): $PATH" # Отладка PATH
+          which npm # Отладка расположения npm
+          which npx # Отладка расположения npx
+          echo "Installing frontend dependencies..."
+          npm cache clean --force || true # Очистка кэша npm
+          npm install # Установка всех зависимостей
+          echo "Contents of node_modules/.bin (frontend):" # Отладка node_modules/.bin
+          ls -la node_modules/.bin || true
+          echo "Building frontend..."
+          npm run build # Сборка фронтенда
+
+          # Перезапуск Next.js приложения (используя PM2)
+          echo "Stopping/deleting old frontend PM2 process (chat-gpt-app-client)..."
+          pm2 stop chat-gpt-app-client || true
+          pm2 delete chat-gpt-app-client || true
+          echo "Starting new frontend PM2 process (chat-gpt-app-client)..."
+          pm2 start npm --name "chat-gpt-app-client" -- start # Запуск Next.js в продакшене
+          pm2 save # Сохранить состояние PM2
+
+          echo "Deployment complete."
