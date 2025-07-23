@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS
 
 export const metadata: Metadata = {
-  title: 'Contact | Чат с нейросетью',
+  title: 'Contact | Нейросеть',
   description:
     'Общайтесь с искусственным интеллектом онлайн на русском языке. Бесплатно, без регистрации, без SMS и VPN. Используйте ChatGPT и MistralAI для кода, учёбы, работы и других задач.',
   keywords: [
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/meta.jpg',
+        url: `${site}/meta.png`,
         width: 1200,
         height: 630,
         alt: 'Чат с нейросетью — MistralAI. Все бесплатно!',
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     title: 'Чат с нейросетью — MistralAI. Все бесплатно!',
     description:
       'Общайтесь с искусственным интеллектом онлайн на русском языке. Бесплатно, без регистрации, без SMS и VPN. Используйте ChatGPT и MistralAI для кода, учёбы, работы и других задач.',
-    images: ['/meta.jpg'],
+    images: [`${site}/meta.png`],
   },
   alternates: {
     canonical: `${site}/chat`,

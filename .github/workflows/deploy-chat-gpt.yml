@@ -150,7 +150,7 @@ jobs:
           echo "PATH before npm install (frontend): $PATH" # Отладка PATH
           which npm # Отладка расположения npm
           which npx # Отладка расположения npx
-          echo "Installing frontend dependencies..."
+          echo "Installing frontend dependencies.."
           npm cache clean --force || true # Очистка кэша npm
           npm install # Установка всех зависимостей
           echo "Contents of node_modules/.bin (frontend):" # Отладка node_modules/.bin

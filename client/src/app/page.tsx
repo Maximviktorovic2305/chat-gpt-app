@@ -10,7 +10,7 @@ import { Metadata } from 'next'
 const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS
 
 export const metadata: Metadata = {
-  title: 'Contact — Нейросеть для работы, кода, учёбы и чата.',
+  title: 'Contact — бесплатная нейросеть для работы, учебы, общения и много другого',
   description:
     'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей ChatGPT и MistralAI, для решения задач по программированию, обучению, работе и общению.',
   keywords: [
@@ -50,8 +50,8 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/meta.jpg',
-        width: 1200,
+        url: `${site}/meta.png`,
+        width: 630,
         height: 630,
         alt: 'Нейросеть Contact — ChatGPT & MistralAI для кода, учёбы, работы и чата. Все бесплатно!',
       },
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     title: 'Contact — Нейросеть для кода, учёбы, работы и чата. Все бесплатно!',
     description:
       'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей ChatGPT и MistralAI, для решения задач по программированию, обучению, работе и общению.',
-    images: ['/meta.jpg'],
+    images: [`${site}/meta.png`],
   },
   alternates: {
     canonical: `${site}`,
