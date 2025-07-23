@@ -34,9 +34,9 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 	}
 
 	return (
-		<div className='bg-inherit flex w-full flex-col mt-2 max-h-[87vh] pr-2 rounded-lg overflow-y-auto max-w-[900px] sm:mx-[10%] self-center text-sm'>
+		<div className='bg-inherit flex flex-col w-full mt-2 max-h-[87vh] rounded-lg overflow-y-auto max-w-[900px] sm:mx-[10%] self-center text-sm'>
 			<ChatHistoryHeader />
-			<div className='relative mt-2 space-y-3 mb-2'>
+			<div className='relative mt-2 space-y-3 mb-2 mr-auto'>
 				{history.map((msg, index) => (
 					<div
 						key={index}
@@ -67,7 +67,7 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 					</div>
 				))}
 				<div ref={endOfMessagesRef} />
-				{history.length ? (
+				{history.length > 1 ? (
 					<div
 						onClick={() => dispatch(clearHistory())}
 						className='absolute -bottom-2 right-2 flex text-[10px] items-center gap-2 duration-200 text-neutral-700 cursor-pointer hover:text-neutral-400'>
