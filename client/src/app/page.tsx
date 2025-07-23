@@ -10,22 +10,62 @@ import { Metadata } from 'next'
 const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS
 
 export const metadata: Metadata = {
-	title: 'Главная страница | Contact',
-	description: 'Узнайте больше о наших услугах и возможностях.',
-	keywords: ['Contact', 'ChatGpt', 'Mistral', 'chat', 'ИИ', 'нейросеть', 'чат', 'услуги', 'Искусственный интеллект'],
-	authors: [{ name: 'Contact AI' }],
-	openGraph: {
-		 title: 'Главная страница - Contact',
-		 description: 'Узнайте больше о наших услугах и возможностях.',
-		//  @TODO заменить на реальный
-		 url: `${site}`,
-		 type: 'website',
-		 images: ['https://www.etcentric.org/wp-content/uploads/2024/03/Mistral_AI_Logo_Banner-200x113.jpeg'],
-	},
-	alternates: {
-		 canonical: `${site}`,
-	},
-};
+  title: 'Contact — Нейросеть для работы, кода, учёбы и чата.',
+  description:
+    'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей ChatGPT и MistralAI, для решения задач по программированию, обучению, работе и общению.',
+  keywords: [
+    'нейросеть',
+    'ChatGPT',
+    'chat gpt',
+    'бесплатно',
+    'без регистрации',
+    'MistralAI',
+    'мистрал',
+    'чат-бот',
+    'код',
+    'программирование',
+    'учеба',
+    'работа',
+    'AI',
+    'искусственный интеллект',
+    'нейро-ассистент',
+    'AI chat',
+    'нейросети',
+    'чат с ИИ',
+    'бесплатная нейросеть',
+    'бесплатный AI',
+    'бесплатное обучение',
+    'бесплатные нейросети для разработчиков',
+    'бесплатный чат с ИИ',
+    'бесплатная помощь в коде',
+  ],
+  authors: [{ name: 'AI Contact', url: site }],
+  openGraph: {
+    title: 'Contact — Нейросеть для кода, учёбы, работы и чата. Все бесплатно!',
+    description:
+      'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей ChatGPT и MistralAI, для решения задач по программированию, обучению, работе и общению.',
+    url: `${site}`,
+    type: 'website',
+    images: [
+      {
+        url: '/meta.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Нейросеть Contact — ChatGPT & MistralAI для кода, учёбы, работы и чата. Все бесплатно!',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Contact — Нейросеть для кода, учёбы, работы и чата. Все бесплатно!',
+    description:
+      'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей ChatGPT и MistralAI, для решения задач по программированию, обучению, работе и общению.',
+    images: ['/meta.jpg'],
+  },
+  alternates: {
+    canonical: `${site}`,
+  },
+}
 
 export default function Home() {
 	return (
