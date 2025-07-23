@@ -9,6 +9,8 @@ export const metadata: Metadata = {
     'Общайтесь с искусственным интеллектом онлайн на русском языке. Бесплатно, без регистрации, без SMS и VPN. Используйте ChatGPT и MistralAI для кода, учёбы, работы и других задач.',
   keywords: [
     'нейросеть',
+    'aicontact',
+    'aicontact.tech',
     'ChatGPT',
     'chat gpt',
     'MistralAI',
@@ -59,10 +61,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${site}/chat`,
   },
-  robots: {
-    index: true,  
-    follow: true, 
-  },
+  robots: 'index, follow'
 }
 
 export default function HomeLayout({
