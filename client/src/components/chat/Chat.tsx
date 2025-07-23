@@ -21,7 +21,7 @@ const Chat = () => {
 	}
 
 	return (
-		<div className='px-4 pb-4 flex flex-col justify-between w-full gap-7 h-[93vh] overflow-y-auto'>
+		<div className='px-4 pb-4 flex flex-col justify-between w-full gap-7 h-[93vh] max-sm:min-h-[100vh] overflow-y-auto'>
 			<ChatHistory history={history} />
 			<div>
 				{!history.length && <ChatOpportunities />}
