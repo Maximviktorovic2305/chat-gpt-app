@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     'бесплатный чат с ИИ',
     'бесплатная помощь в коде',
   ],
-  authors: [{ name: 'AI Contact', url: site }],
+  authors: [{ name: 'Максим Переверзев', url: site }],
   openGraph: {
     title: 'Contact — Нейросеть для кода, учёбы, работы и чата. Все бесплатно!',
     description:
@@ -64,6 +64,10 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: `${site}`,
+  },
+  robots: {
+    index: true,  
+    follow: true, 
   },
 }
 
