@@ -60,8 +60,8 @@ export const metadata: Metadata = {
     canonical: `${site}/chat`,
   },
   robots: {
-    index: true,
-    follow: true,
+    index: true,  
+    follow: true, 
   },
 }
 
