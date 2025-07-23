@@ -2,7 +2,7 @@ import Chat from '@/components/chat/Chat'
 
 export default function Home() {
 	return (
-		<div>
+		<div className='size-full'>
 			<Chat />
 		</div>
 	)

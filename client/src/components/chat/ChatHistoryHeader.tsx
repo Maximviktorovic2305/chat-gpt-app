@@ -11,7 +11,7 @@ const ChatHistoryHeader = () => {
 					<HoverCardTrigger asChild>
 						<CircleHelp className='w-4 h-auto cursor-pointer text-gray1 hover:text-white duration-200' />
 					</HoverCardTrigger>
-					<HoverCardContent className='w-full max-w-[200px]'>
+					<HoverCardContent className='w-full h-full max-w-[200px]'>
 						<div className='text-[12px] text-white/30 mb-1'>
 							История переписки
 						</div>

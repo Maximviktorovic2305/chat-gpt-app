@@ -21,9 +21,9 @@ const Chat = () => {
 	}
 
 	return (
-		<div className='px-4 flex flex-col justify-between w-full min-h-screen'>
-				<ChatHistory history={history} />
-			<div  className='size-full'>
+		<div className='px-4 flex flex-col justify-between size-full h-full'>
+			<ChatHistory history={history} />
+			<div className='h-full max-h-fit'>
 				{!history.length && <ChatOpportunities />}
 				<ChatInput isLoading={isLoading} onMessageSend={handleMessageSend} />
 			</div>
