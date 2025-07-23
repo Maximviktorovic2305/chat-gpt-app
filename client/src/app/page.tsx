@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   description:
     'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей ChatGPT и MistralAI, для решения задач по программированию, обучению, работе и общению.',
   keywords: [
+    'aicontact',
+    'aicontact.tech',
     'нейросеть',
     'ChatGPT',
     'chat gpt',
@@ -65,10 +67,7 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${site}`,
   },
-  robots: {
-    index: true,  
-    follow: true, 
-  },
+  robots: 'index, follow'
 }
 
 export default function Home() {
