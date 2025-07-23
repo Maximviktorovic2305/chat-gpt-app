@@ -1,6 +1,5 @@
 'use client'
 
-import Header from '@/components/layout/Header'
 import Sidebar from '@/components/layout/sidebar/Sidebar'
 import useDeviceType from '@/hooks/useDeviceType'
 import { setInitialState } from '@/store/sidebar/sidebar.slice'
@@ -26,10 +25,9 @@ const BodyLayout = ({
 	 }, [deviceType, dispatch]);
 
 	return (
-		<div className='size-full bg-black1 overflow-y-hidden flex items-center'>
+		<div className='bg-black1 flex items-center h-screen'>
 			<Sidebar />
-			<div className='bg-black2 text-white size-full w-full'>
-				<Header />
+			<div className='bg-black2 text-white size-full min-h-screen'>
 				{children}
 			</div>
 		</div>

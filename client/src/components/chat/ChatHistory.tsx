@@ -9,6 +9,7 @@ import ChatHistoryHeader from './ChatHistoryHeader'
 import { ChatMessage } from '@/types'
 import ChatMessageContent from './ChatMessageContent'
 import { copyToClipboard } from '@/utils/copyToClipboard'
+import Header from '../layout/Header'
 
 interface ChatHistoryProps {
 	history: ChatMessage[]
@@ -34,9 +35,10 @@ const ChatHistory = ({ history }: ChatHistoryProps) => {
 	}
 
 	return (
-		<div className='bg-inherit flex flex-col max-sm:mb-4 w-full mt-2 max-h-[87vh] rounded-lg overflow-y-auto max-w-[900px] sm:mx-[10%] self-center text-sm'>
+		<div className='bg-inherit flex flex-col max-sm:mb-4 w-full h-full mt-2 max-h-[85vh] rounded-lg overflow-y-auto max-w-[900px] sm:mx-[10%] self-center text-sm'>
+			<Header />         
 			<ChatHistoryHeader />
-			<div className='relative mt-2 space-y-3 mb-2 mr-auto'>
+			<div className='relative flex-1 mt-2 space-y-3 mb-2 mr-auto'>
 				{history.map((msg, index) => (
 					<div
 						key={index}
