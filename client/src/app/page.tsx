@@ -10,13 +10,17 @@ import { Metadata } from 'next'
 const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS
 
 export const metadata: Metadata = {
-  title: 'Contact — бесплатная нейросеть для работы, учебы, общения и много другого',
+  title: 'Contact — бесплатная платформа с нейросетью для работы, учебы, общения и много другого',
   description:
-    'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей ChatGPT и MistralAI, для решения задач по программированию, обучению, работе и общению.',
+    'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей MistralAI, для решения задач по программированию, обучению, работе и общению.',
   keywords: [
     'aicontact',
     'aicontact.tech',
+    'Contact',
+    'Kontact',
     'нейросеть',
+    'контакт',
+    'нейросеть контакт',
     'ChatGPT',
     'chat gpt',
     'бесплатно',
@@ -41,11 +45,11 @@ export const metadata: Metadata = {
     'бесплатный чат с ИИ',
     'бесплатная помощь в коде',
   ],
-  authors: [{ name: 'Максим Переверзев', url: site }],
+  authors: [{ name: 'Contact', url: site }],
   openGraph: {
-    title: 'Contact — Нейросеть для кода, учёбы, работы и чата. Все бесплатно!',
+    title: 'Contact — бесплатная платформа с нейросетью для работы, учебы, общения и много другого',
     description:
-      'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей ChatGPT и MistralAI, для решения задач по программированию, обучению, работе и общению.',
+      'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей MistralAI, для решения задач по программированию, обучению, работе и общению.',
     url: `${site}`,
     type: 'website',
     images: [
@@ -53,21 +57,21 @@ export const metadata: Metadata = {
         url: `${site}/meta.png`,
         width: 630,
         height: 630,
-        alt: 'Нейросеть Contact — ChatGPT & MistralAI для кода, учёбы, работы и чата. Все бесплатно!',
+        alt: 'Contact — бесплатная платформа с нейросетью для работы, учебы, общения и много другого',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Contact — Нейросеть для кода, учёбы, работы и чата. Все бесплатно!',
+    title: 'Contact — бесплатная платформа с нейросетью для работы, учебы, общения и много другого',
     description:
-      'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей ChatGPT и MistralAI, для решения задач по программированию, обучению, работе и общению.',
+      'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей MistralAI, для решения задач по программированию, обучению, работе и общению.',
     images: [`${site}/meta.png`],
   },
   alternates: {
     canonical: `${site}`,
   },
-  robots: 'index, follow'
+  robots: 'noindex, nofollow'
 }
 
 export default function Home() {

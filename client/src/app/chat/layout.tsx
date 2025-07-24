@@ -12,7 +12,11 @@ export const metadata: Metadata = {
 		'aicontact',
 		'aicontact.tech',
 		'ChatGPT',
+		'Contact',
+    	'Kontact',
 		'chat gpt',
+		'контакт',
+		'нейросеть контакт',
 		'MistralAI',
 		'мистрал',
 		'чат-бот',
@@ -61,7 +65,7 @@ export const metadata: Metadata = {
 	alternates: {
 		canonical: `${site}/chat`,
 	},
-	robots: 'index, follow',
+	robots: 'noindex, nofollow'
 }
 
 export default function HomeLayout({
