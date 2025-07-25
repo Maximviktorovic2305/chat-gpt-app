@@ -69,8 +69,8 @@ export const metadata: Metadata = {
 	},
 	robots: 'index, follow',
 	icons: {
-		icon: '/faviconka.ico',
-	}
+		icon: `${site}/faviconka.ico`,
+	}         
 }
 
 export default function HomeLayout({
