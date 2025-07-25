@@ -67,7 +67,10 @@ export const metadata: Metadata = {
 	alternates: {
 		canonical: `${site}/chat`,
 	},
-	robots: 'index, follow'
+	robots: 'index, follow',
+	icons: {
+		icon: '/faviconka.ico',
+	}
 }
 
 export default function HomeLayout({
