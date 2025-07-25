@@ -83,7 +83,7 @@ export const metadata: Metadata = {
 		'yandex-verification': `${yandex}`,
 	},
 	icons: {
-		icon: '/favicon.ico',
+		icon: '/faviconka.ico',
 	},
 }
 
