@@ -1,0 +1,11 @@
+# Allow all web crawlers to access all pages
+User-agent: *
+Allow: /
+
+# Disallow specific pages
+Disallow: /auth/register
+Disallow: /auth/login
+Disallow: /private-policy
+
+# Specify the path to your sitemap
+Sitemap: https://aicontact.tech/sitemap.xml
