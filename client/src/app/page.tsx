@@ -8,6 +8,7 @@ import HomeUses from '@/components/home/HomeUses'
 import { Metadata } from 'next'
 
 const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS
+const yandex = process.env.NEXT_PUBLIC_YANDEX_VERIFICATION
 
 export const metadata: Metadata = {
   title: 'Contact — бесплатная платформа с нейросетью для работы, учебы, общения и много другого',
@@ -15,8 +16,10 @@ export const metadata: Metadata = {
     'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей MistralAI, для решения задач по программированию, обучению, работе и общению.',
   keywords: [
     'aicontact',
+    'ai contact',
+    'contact ai',
     'aicontact.tech',
-    'Contact',
+    'contact',
     'Kontact',
     'нейросеть',
     'контакт',
@@ -71,7 +74,11 @@ export const metadata: Metadata = {
   alternates: {
     canonical: `${site}`,
   },
-  robots: 'noindex, nofollow'
+  robots: 'index, follow',
+  // ✅ Метатег Яндекс-верификации
+  other: {
+    'yandex-verification': `${yandex}`,
+  },
 }
 
 export default function Home() {
