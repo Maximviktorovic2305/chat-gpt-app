@@ -6,7 +6,7 @@ const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS
 export const metadata: Metadata = {
 	title: 'Contact | Нейросеть',
 	description:
-		'Общайтесь с искусственным интеллектом онлайн на русском языке. Бесплатно, без регистрации, без SMS и VPN. Используйте ChatGPT и MistralAI для кода, учёбы, работы и других задач.',
+		'Общайтесь с искусственным интеллектом онлайн на русском языке. Бесплатно, без регистрации, без SMS и VPN',
 	keywords: [
 		'нейросеть',
 		'aicontact',

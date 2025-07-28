@@ -16,9 +16,9 @@ const HomeUses = () => {
 						key={id}>
 						<div className='text-white/70'>{title}</div>
 						<div className='relative'>
-							<span className='float-left mr-3 mb-3'>
+							<div className='float-left mr-3 mb-3'>
 								<Icon />
-							</span>
+							</div>
 							<span className='text-white/50 text-sm'>{text}</span>
 						</div>
 					</div>

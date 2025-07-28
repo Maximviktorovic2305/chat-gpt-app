@@ -89,7 +89,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
 	return (
-		<div className='relative h-full bg-[#141415] text-white/70 min-h-screen w-full px-[2%] mx-auto'>
+		<section className='relative h-full bg-[#141415] text-white/70 min-h-screen w-full px-[2%] mx-auto'>
 			<HomeHeader />
 			<HomeHero />
 			<HomeForWhom />
@@ -97,6 +97,6 @@ export default function Home() {
 			<HomeUses />
 			<HomeTryIt />
 			<HomeFooter />
-		</div>
+		</section>
 	)
 }

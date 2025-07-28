@@ -15,7 +15,7 @@ const ChatOpportunitiesCard = ({ Icon, id, title, text }: OpportunitiesCardsProp
 	return (
 		<div className='bg-inherit rounded-xl border flex flex-col gap-2 cursor-pointer border-gray1 hover:bg-black3 duration-200 p-3'>
 			<div className='flex items-center gap-2'>
-            <span className={iconStyle}><Icon /></span>
+            <div className={iconStyle}><Icon /></div>
 				<span className='text-sm font-bold text-white/80'>{title}</span>
 			</div>
          <div className='text-[12px] text-gray1'>{text}</div>

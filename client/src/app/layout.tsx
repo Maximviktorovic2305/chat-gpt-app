@@ -25,9 +25,6 @@ export default function RootLayout({
 
 	return (
 		<html lang='ru' className='size-full'>
-			<head>
-				<link rel='icon' href='/faviconka.ico' type='image/x-icon' />
-			</head>
 			<Providers>
 				<body
 					className={`${geistSans.variable} ${geistMono.variable} bg-[#141415] size-full antialiased`}>
