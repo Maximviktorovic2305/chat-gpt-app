@@ -15,10 +15,10 @@ const Chatquestion = ({ question }: Props) => {
 		<>
 			{question ? (
 				<div className='text-[14px] text-neutral-400 flex items-center justify-between'>
-					<span className='flex items-center'>
+					<div className='flex items-center'>
 						<DotIcon />
 						{editedQuestion}
-					</span>
+					</div>
 					<Trash2Icon
 						onClick={() => {
 							dispatch(clearHistory())
