@@ -16,8 +16,8 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '20.19.4' # Укажите версию Node.js, которую вы используете
-
+        node-version: '22.18.0' # Указана новая версия Node.js для окружения GitHub Actions
+        
     # --- CI для NestJS Backend ---
     - name: Install backend dependencies
       working-directory: ./server # Путь к папке с NestJS бэкендом
@@ -40,6 +40,7 @@ jobs:
     needs: build # Этот job запускается только после успешного завершения job 'build'
     runs-on: ubuntu-latest
     environment: Production # Опционально, для управления секретами и окружениями
+    timeout-minutes: 30 # Увеличиваем таймаут для всего job 'deploy' до 30 минут
     
     steps:
     - name: Deploy to server
@@ -57,11 +58,22 @@ jobs:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts # Убедимся, что права доступа корректны
 
-          # --- Установка PATH для Node.js, npm, npx и PM2 ---
-          # Это очень важно, так как в неинтерактивной SSH-сессии PATH может быть неполным.
-          # Используйте путь, который вы получили из `echo $PATH` для пользователя `max`.
-          export PATH="/home/max/.nvm/versions/node/v20.19.4/bin:$PATH"
-          # Гарантируем, что PM2 установлен и доступен
+          # --- Загружаем NVM и активируем нужную версию Node.js ---
+          # Этот шаг гарантирует, что Node.js 22.18.0, установленный на сервере через NVM, будет доступен
+          # для всех последующих команд npm и node в этой SSH-сессии.
+          echo "Loading NVM and activating Node.js 22.18.0..."
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+          [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+          
+          # Активируем нужную версию Node.js (устанавливаем, если не найдена, затем используем)
+          nvm use 22.18.0 || nvm install 22.18.0 && nvm use 22.18.0
+          
+          echo "Verifying Node.js and npm commands after NVM activation:"
+          node -v # Проверяем версию Node.js
+          npm -v  # Проверяем версию npm
+
+          # --- Установка PM2 (теперь npm должен быть доступен) ---
           echo "Ensuring PM2 is installed globally..."
           npm install -g pm2 # Установка PM2 глобально
           echo "Verifying pm2 command after global install:"
