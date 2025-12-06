@@ -59,15 +59,15 @@ jobs:
           chmod 600 ~/.ssh/known_hosts # Убедимся, что права доступа корректны
 
           # --- Загружаем NVM и активируем нужную версию Node.js ---
-          # Этот шаг гарантирует, что Node.js 22.18.0, установленный на сервере через NVM, будет доступен
+          # Этот шаг гарантирует, что Node.js 22.21.1, установленный на сервере через NVM, будет доступен
           # для всех последующих команд npm и node в этой SSH-сессии.
-          echo "Loading NVM and activating Node.js 22.18.0..."
+          echo "Loading NVM and activating Node.js 22.21.1..."
           export NVM_DIR="$HOME/.nvm"
           [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
           [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
           
           # Активируем нужную версию Node.js (устанавливаем, если не найдена, затем используем)
-          nvm use 22.18.0 || nvm install 22.18.0 && nvm use 22.18.0
+          nvm use 22.21.1 || nvm install 22.21.1 && nvm use 22.21.1
           
           echo "Verifying Node.js and npm commands after NVM activation:"
           node -v # Проверяем версию Node.js
