@@ -4,6 +4,7 @@ import './globals.css'
 import Script from 'next/script'
 import Providers from '@/providers/Providers'
 import YandexMetrikaTracker from '@/components/base/YandexMetrikaTracker'
+import CookieNotice from '@/components/base/CookieNotice'
 
 const geistSans = localFont({
 	src: './fonts/GeistVF.woff',
@@ -63,6 +64,7 @@ export default function RootLayout({
 					{/* /Yandex.Metrika counter */}
 					{/* Добавляем компонент для отслеживания SPA-переходов */}
 					<YandexMetrikaTracker metrikaId={YANDEX_METRIKA_ID} />
+					<CookieNotice />
 				</body>
 			</Providers>
 		</html>

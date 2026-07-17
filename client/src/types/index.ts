@@ -7,7 +7,7 @@ export interface ChatMessage {
 
  export interface ITokens {
   accessToken: string;
-  refreshToken: string;
+  refreshToken?: string;
  }                                             
 
  export interface IAuthResponse extends ITokens {

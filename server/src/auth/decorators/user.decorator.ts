@@ -1,7 +1,7 @@
 // Получаем данные текущего usera
 
 import { ExecutionContext, createParamDecorator } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { User } from 'src/generated/prisma/client';
 
 export const CurrentUser = createParamDecorator(
   (data: keyof User, ctx: ExecutionContext) => {

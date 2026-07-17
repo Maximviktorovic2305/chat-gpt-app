@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 		'aicontact',
 		'ai contact',
 		'contact ai',
-		'aicontact.tech',
+		'ai-contact.site',
 		'contact',
 		'Kontact',
 		'нейросеть',

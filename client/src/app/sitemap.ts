@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 
-const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS || 'https://aicontact.tech';
+const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS || 'https://ai-contact.site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

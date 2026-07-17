@@ -31,6 +31,14 @@ const nextConfig: NextConfig = {
 				protocol: 'http',
 				hostname: 'aicontact.tech',
 			},
+			{
+				protocol: 'https',
+				hostname: 'ai-contact.site',
+			},
+			{
+				protocol: 'http',
+				hostname: 'ai-contact.site',
+			},
 		],
 	},
 	distDir: 'dist',

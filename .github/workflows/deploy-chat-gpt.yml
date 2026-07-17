@@ -5,6 +5,10 @@ on:
     branches:
       - master # Основная ветка в git
 
+concurrency:
+  group: chat-gpt-app-production
+  cancel-in-progress: false
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,7 +25,11 @@ jobs:
     # --- CI для NestJS Backend ---
     - name: Install backend dependencies
       working-directory: ./server # Путь к папке с NestJS бэкендом
-      run: npm ci
+      run: npm ci --prefer-offline --no-audit --no-fund
+
+    - name: Generate Prisma client
+      working-directory: ./server
+      run: npx prisma generate
 
     - name: Build backend
       working-directory: ./server
@@ -30,7 +38,7 @@ jobs:
     # --- CI для Next.js Frontend ---
     - name: Install frontend dependencies
       working-directory: ./client # Путь к папке с Next.js фронтендом
-      run: npm ci
+      run: npm ci --prefer-offline --no-audit --no-fund
 
     - name: Build frontend
       working-directory: ./client
@@ -118,27 +126,24 @@ jobs:
           ls -la # Проверка содержимого директории бэкенда
 
           # Очистка node_modules и папки сборки для чистой установки/сборки
-          echo "Cleaning backend node_modules and dist directory..."
-          rm -rf node_modules dist # Явно удаляем эти папки
+          echo "Cleaning backend build directory..."
+          rm -rf dist
           ls -la # Проверяем, что папки удалены
 
           echo "PATH before npm install (backend): $PATH" # Отладка PATH
           which npm # Отладка расположения npm
           which npx # Отладка расположения npx
           echo "Installing backend dependencies..."
-          npm cache clean --force || true # Очистка кэша npm
-          npm install # Установка всех зависимостей (включая devDependencies для сборки)
+          npm config set fetch-retries 5
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm ci --prefer-offline --no-audit --no-fund
           echo "Contents of node_modules/.bin (backend):" # Отладка node_modules/.bin
           ls -la node_modules/.bin || true # Используем || true, чтобы скрипт не падал, если директория пуста
-          echo "Building backend..."
-          npm run build # Сборка бэкенда
-
-          # --- Действия для Prisma (если используется) ---
-          # Если ваш NestJS бэкенд использует Prisma, раскомментируйте следующие строки:
           echo "Running Prisma generate..."
           npx prisma generate
-          echo "Running Prisma db push..."
-          npx prisma db push # ВНИМАНИЕ: Для продакшена обычно рекомендуется 'prisma migrate deploy'
+          echo "Building backend..."
+          npm run build
 
           # Перезапуск NestJS приложения (используя PM2)
           echo "Stopping/deleting old backend PM2 process (chat-gpt-app-server)..."
@@ -155,16 +160,18 @@ jobs:
           ls -la # Проверка содержимого директории фронтенда
 
           # Очистка node_modules и папки сборки для чистой установки/сборки
-          echo "Cleaning frontend node_modules and dist directory..."
-          rm -rf node_modules dist # Явно удаляем эти папки
+          echo "Cleaning frontend build directory..."
+          rm -rf dist
           ls -la # Проверяем, что папки удалены
 
           echo "PATH before npm install (frontend): $PATH" # Отладка PATH
           which npm # Отладка расположения npm
           which npx # Отладка расположения npx
           echo "Installing frontend dependencies.."
-          npm cache clean --force || true # Очистка кэша npm
-          npm install # Установка всех зависимостей
+          npm config set fetch-retries 5
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+          npm ci --prefer-offline --no-audit --no-fund
           echo "Contents of node_modules/.bin (frontend):" # Отладка node_modules/.bin
           ls -la node_modules/.bin || true
           echo "Building frontend..."

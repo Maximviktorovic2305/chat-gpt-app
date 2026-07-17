@@ -6,12 +6,28 @@ import { errorCatch, getContentType } from "./api.helper";
 export const axiosClassic = axios.create({
    baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}/api`,
    headers: getContentType(),
+   withCredentials: true,
 });
 
 export const instanse = axios.create({
    baseURL: `${process.env.NEXT_PUBLIC_SERVER_URL}/api`,
    headers: getContentType(),
+   withCredentials: true,
 });   
+
+let refreshPromise: Promise<void> | null = null;
+
+const refreshAccessToken = () => {
+   if (!refreshPromise) {
+      refreshPromise = AuthService.getNewTokens()
+         .then(() => undefined)
+         .finally(() => {
+            refreshPromise = null;
+         });
+   }
+
+   return refreshPromise;
+};
 
 instanse.interceptors.request.use(async (config) => {
    const accessToken = getAccessToken();
@@ -37,13 +53,10 @@ instanse.interceptors.response.use((config) => config,
          originalRequest._isRetry = true;
          try {
             // get new tokens
-            await AuthService.getNewTokens();
+            await refreshAccessToken();
             return instanse.request(originalRequest);
-         } catch (error) {
-            // delete tokens
-            if (errorCatch(error) === "jwt expired") {
-               removeFromStorage();
-            }
+         } catch {
+            removeFromStorage();
          }
       }
       throw error;

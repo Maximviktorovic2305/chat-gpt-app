@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@prisma/client';
+import { User } from 'src/generated/prisma/client';
 import * as argon2 from 'argon2';
 import { PrismaService } from 'src/prisma.service';
 import { UserService } from 'src/user/user.service';
@@ -106,9 +106,9 @@ export class AuthService {
   }
 
   // Получить новые токены
-  async getNewTokens(refreshToken: string) {
-    const result = await this.jwt.verifyAsync(refreshToken);
+  async getNewTokens(refreshToken?: string) {
     if (!refreshToken) throw new UnauthorizedException('Ошибка токена');
+    const result = await this.jwt.verifyAsync(refreshToken);
 
     const user = await this.userService.byId(result.id);
 
