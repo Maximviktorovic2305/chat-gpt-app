@@ -18,6 +18,14 @@ const chatSlice = createSlice({
     addMessage: (state, action: PayloadAction<ChatMessage>) => {
       state.history.push(action.payload);
     },
+    updateLastAssistantMessage: (state, action: PayloadAction<string>) => {
+      for (let index = state.history.length - 1; index >= 0; index -= 1) {
+        if (state.history[index].role === 'assistant') {
+          state.history[index].content = action.payload;
+          break;
+        }
+      }
+    },
     clearHistory: (state) => {
       state.history = [];
     },
@@ -27,5 +35,10 @@ const chatSlice = createSlice({
   },
 });
 
-export const { addMessage, clearHistory, setLoading } = chatSlice.actions;
+export const {
+  addMessage,
+  updateLastAssistantMessage,
+  clearHistory,
+  setLoading,
+} = chatSlice.actions;
 export default chatSlice;

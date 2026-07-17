@@ -13,18 +13,21 @@ import Header from '../layout/Header'
 
 interface ChatHistoryProps {
 	history: ChatMessage[]
+	isLoading: boolean
 }
 
-const ChatHistory = ({ history }: ChatHistoryProps) => {
+const ChatHistory = ({ history, isLoading }: ChatHistoryProps) => {
 	const dispatch = useDispatch()
 	const endOfMessagesRef = useRef<HTMLDivElement | null>(null)
 	const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
 
 	useEffect(() => {
 		if (endOfMessagesRef.current) {
-			endOfMessagesRef.current.scrollIntoView({ behavior: 'smooth' })
+			endOfMessagesRef.current.scrollIntoView({
+				behavior: isLoading ? 'auto' : 'smooth',
+			})
 		}
-	}, [history])
+	}, [history, isLoading])
 
 	const handleCopy = async (text: string, index: number) => {
 		await copyToClipboard(text)
