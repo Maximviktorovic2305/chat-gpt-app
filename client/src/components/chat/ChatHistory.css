@@ -1,18 +1,8 @@
-::-webkit-scrollbar {
-   width: 6px; /* Ширина скроллбара */
- }
- 
- ::-webkit-scrollbar-track {
-   background: rgba(255, 255, 255, 0.1); /* Цвет трека */
-   border-radius: 10px;
- }
- 
- ::-webkit-scrollbar-thumb {
-   background-color: rgba(255, 255, 255, 0.3); /* Цвет ползунка */
-   border-radius: 10px;
- }
- 
- ::-webkit-scrollbar-thumb:hover {
-   background-color: rgba(255, 255, 255, 0.5); /* Цвет ползунка при наведении */
- }
- 
+.chat-history-scroll {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.chat-history-scroll::-webkit-scrollbar {
+	display: none;
+}
