@@ -4,7 +4,7 @@ import {
   ForbiddenException,
   Injectable,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { User } from 'src/generated/prisma/client';
 import { Observable } from 'rxjs';
 
 @Injectable()

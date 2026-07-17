@@ -1,6 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import AuthService from "@/services/auth/auth.service";
-import { removeFromStorage } from "@/services/auth/auth.helper";
 import { errorCatch } from "@/api/api.helper";
 import { IAuthResponse, IRegisterForm } from "@/types";
 
@@ -23,7 +22,7 @@ export const register = createAsyncThunk('user/register', async (data: IRegister
 
 export const logout = createAsyncThunk('auth/logout', 
     async () => {
-        removeFromStorage()
+        await AuthService.logout()
     }
 )   
 

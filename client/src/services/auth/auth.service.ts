@@ -1,5 +1,5 @@
-import { axiosClassic } from "@/api/api.interceptor";
-import { getRefreshToken, getUserFromStorage, saveToStorage } from "./auth.helper";
+import { axiosClassic, instanse } from "@/api/api.interceptor";
+import { removeFromStorage, saveToStorage } from "./auth.helper";
 import { IAUthRegister, IAuthResponse } from "@/types";
 
 export const AuthService = {
@@ -36,11 +36,10 @@ export const AuthService = {
 
    // Получение новых токенов               
    async getNewTokens() {
-      const refreshToken = getRefreshToken()
-
       const response = await axiosClassic.post<string, { data: IAuthResponse }>(
-         "/auth/login/access-token",
-         { refreshToken },
+         "/auth/refresh",
+         null,
+         { headers: { "X-Requested-With": "XMLHttpRequest" } },
       );   
       
       if (response.data.accessToken) {
@@ -52,19 +51,21 @@ export const AuthService = {
 
    // Получение своего профайла                        
    async getMyProfile() {
-      const user = getUserFromStorage()
-      const userId = user.id
-
-      const response = await axiosClassic.post<number, { data: IAuthResponse }>(
-         "/auth/me",
-         { userId },
-      );  
-      
-      if (response.data.accessToken) {
-         saveToStorage(response.data);
-      }
+      const response = await instanse.get<IAuthResponse>("/auth/me");
 
       return response.data;
+   },
+
+   async logout() {
+      try {
+         await axiosClassic.post(
+            "/auth/logout",
+            null,
+            { headers: { "X-Requested-With": "XMLHttpRequest" } },
+         );
+      } finally {
+         removeFromStorage();
+      }
    },
 };
 

@@ -8,4 +8,4 @@ Disallow: /auth/login
 Disallow: /private-policy
 
 # Specify the path to your sitemap
-Sitemap: https://aicontact.tech/sitemap.xml
+Sitemap: https://ai-contact.site/sitemap.xml

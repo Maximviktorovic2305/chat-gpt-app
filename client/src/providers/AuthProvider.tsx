@@ -3,33 +3,15 @@
 import { ACCESS_TOKEN, REFRESH_TOKEN } from "@/constants/token.constants";
 import { useActions } from "@/hooks/useActions";
 import { FC, PropsWithChildren, useEffect } from "react";
-import { usePathname } from "next/navigation";
-import { useUser } from "@/hooks/useSelectors";
 
 const AuthProvider: FC<PropsWithChildren<unknown>> = ({ children }) => {
-   const { user } = useUser()
-   const { checkAuth, getProfile } = useActions();
-   const pathname = usePathname();
+   const { checkAuth } = useActions();
 
    useEffect(() => {
-      function getAccessToken(): string | null {
-         return localStorage.getItem(ACCESS_TOKEN);
-       }
-       const accessToken = getAccessToken()
-      if (accessToken) {
-         checkAuth();
-      }
+      localStorage.removeItem(ACCESS_TOKEN);
+      localStorage.removeItem(REFRESH_TOKEN);
+      checkAuth();
    }, [checkAuth]);
-
-   useEffect(() => {
-      function getAccessToken(): string | null {
-         return localStorage.getItem(REFRESH_TOKEN);
-       }
-       const refreshToken = getAccessToken()
-      if (!refreshToken && user) {
-         getProfile();
-      }
-   }, [getProfile, user, pathname]);
 
    return <>{children}</>;
 
