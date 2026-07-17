@@ -18,12 +18,13 @@ interface ChatHistoryProps {
 
 const ChatHistory = ({ history, isLoading }: ChatHistoryProps) => {
 	const dispatch = useDispatch()
-	const endOfMessagesRef = useRef<HTMLDivElement | null>(null)
+	const chatHistoryRef = useRef<HTMLDivElement | null>(null)
 	const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
 
 	useEffect(() => {
-		if (endOfMessagesRef.current) {
-			endOfMessagesRef.current.scrollIntoView({
+		if (chatHistoryRef.current) {
+			chatHistoryRef.current.scrollTo({
+				top: chatHistoryRef.current.scrollHeight,
 				behavior: isLoading ? 'auto' : 'smooth',
 			})
 		}
@@ -38,7 +39,9 @@ const ChatHistory = ({ history, isLoading }: ChatHistoryProps) => {
 	}
 
 	return (
-		<div className='bg-inherit flex flex-col max-sm:mb-4 w-full h-full mt-2 max-h-[85vh] rounded-lg overflow-y-auto max-w-[900px] sm:mx-[10%] self-center text-sm'>
+		<div
+			ref={chatHistoryRef}
+			className='chat-history-scroll bg-inherit flex flex-col max-sm:mb-4 w-full h-full mt-2 max-h-[85vh] rounded-lg overflow-y-auto max-w-[900px] sm:mx-[10%] self-center text-sm'>
 			<Header />         
 			<ChatHistoryHeader />
 			<div className='relative flex-1 mt-2 space-y-3 mb-2 mr-auto'>
@@ -71,7 +74,6 @@ const ChatHistory = ({ history, isLoading }: ChatHistoryProps) => {
 						<ChatMessageContent content={msg.content} />
 					</div>
 				))}
-				<div ref={endOfMessagesRef} />
 				{history.length > 1 ? (
 					<div
 						onClick={() => dispatch(clearHistory())}
