@@ -16,6 +16,7 @@ model User {
   name     String?
   email    String  @unique
   password String
+  refreshTokenHash String? @map("refresh_token_hash")
 
   isAdmin Boolean @default(false)
 }

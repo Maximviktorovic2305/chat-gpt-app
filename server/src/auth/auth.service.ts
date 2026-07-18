@@ -1,122 +1,188 @@
+import { createHash, randomUUID } from 'node:crypto'
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/generated/prisma/client';
-import * as argon2 from 'argon2';
-import { PrismaService } from 'src/prisma.service';
-import { UserService } from 'src/user/user.service';
-import { LoginAuthDto, RegisterAuthDto } from './dto/create-auth.dto';
+	ConflictException,
+	Injectable,
+	UnauthorizedException,
+} from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { JwtService } from '@nestjs/jwt'
+import * as argon2 from 'argon2'
+import { PrismaService } from '../common/database/prisma.service'
+import {
+	ACCESS_TOKEN_TTL,
+	getAccessTokenSecret,
+	getRefreshTokenSecret,
+	REFRESH_TOKEN_TTL,
+} from './auth-token.config'
+import { LoginAuthDto, RegisterAuthDto } from './dto/create-auth.dto'
+
+const publicUserSelect = {
+	id: true,
+	name: true,
+	email: true,
+	isAdmin: true,
+} as const
+
+interface JwtPayload {
+	sub: number
+	type: 'access' | 'refresh'
+}
+
+interface TokenPair {
+	accessToken: string
+	refreshToken: string
+}
+
+const hashRefreshToken = (token: string): string =>
+	createHash('sha256').update(token).digest('hex')
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private jwt: JwtService,
-    private userService: UserService,
-  ) {}
+	private readonly dummyPasswordHash = argon2.hash(randomUUID())
 
-  // Генерируем токены
-  private async issueTokens(userId: number) {
-    const data = { id: userId };
+	constructor(
+		private readonly prisma: PrismaService,
+		private readonly jwt: JwtService,
+		private readonly config: ConfigService,
+	) {}
 
-    const accessToken = this.jwt.sign(data, {
-      expiresIn: '15m',
-    });
+	async register(dto: RegisterAuthDto) {
+		const existingUser = await this.prisma.user.findUnique({
+			where: { email: dto.email },
+			select: { id: true },
+		})
+		if (existingUser) {
+			throw new ConflictException('Пользователь с таким email уже существует')
+		}
 
-    const refreshToken = this.jwt.sign(data, {
-      expiresIn: '30d',
-    });
+		const user = await this.prisma.user.create({
+			data: {
+				name: dto.name,
+				email: dto.email,
+				password: await argon2.hash(dto.password),
+				isAdmin: false,
+			},
+			select: publicUserSelect,
+		})
+		const tokens = await this.issueTokens(user.id)
+		await this.storeRefreshToken(user.id, tokens.refreshToken)
 
-    return { accessToken, refreshToken };
-  }
+		return { user, ...tokens }
+	}
 
-  // Возвращаемые поля пользователя
-  private returnUserFields(user: User) {
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-    };
-  }
+	async login(dto: LoginAuthDto) {
+		const userWithPassword = await this.prisma.user.findUnique({
+			where: { email: dto.email },
+			select: { ...publicUserSelect, password: true },
+		})
+		const passwordHash = userWithPassword?.password ?? (await this.dummyPasswordHash)
+		const passwordIsValid = await argon2.verify(passwordHash, dto.password)
 
-  // Проверяем пароль пользователя
-  private async validateUser(loginAuthDto: LoginAuthDto) {
-    const user = await this.prisma.user.findUnique({
-      where: { email: loginAuthDto.email },
-    });
+		if (!userWithPassword || !passwordIsValid) {
+			throw new UnauthorizedException('Неверный email или пароль')
+		}
 
-    if (!user) throw new NotFoundException('Пользователь не найден');
+		const user = {
+			id: userWithPassword.id,
+			name: userWithPassword.name,
+			email: userWithPassword.email,
+			isAdmin: userWithPassword.isAdmin,
+		}
+		const tokens = await this.issueTokens(user.id)
+		await this.storeRefreshToken(user.id, tokens.refreshToken)
 
-    const isValid = await argon2.verify(user.password, loginAuthDto.password);
+		return { user, ...tokens }
+	}
 
-    if (!isValid) throw new NotFoundException('Не верный пароль');
+	async getProfile(userId: number) {
+		const user = await this.prisma.user.findUnique({
+			where: { id: userId },
+			select: publicUserSelect,
+		})
+		if (!user) throw new UnauthorizedException('Пользователь не найден')
+		return user
+	}
 
-    return user;
-  }
+	async refresh(refreshToken?: string) {
+		const payload = await this.verifyRefreshToken(refreshToken)
+		if (!refreshToken) throw new UnauthorizedException('Недействительная сессия')
+		const currentHash = hashRefreshToken(refreshToken)
+		const user = await this.prisma.user.findFirst({
+			where: { id: payload.sub, refreshTokenHash: currentHash },
+			select: publicUserSelect,
+		})
+		if (!user) throw new UnauthorizedException('Недействительная сессия')
 
-  // Зарегистрировать пользователя
-  async register(registerAuthDto: RegisterAuthDto) {
-    const isUserExists = await this.prisma.user.findUnique({
-      where: { email: registerAuthDto.email },
-    });
-    if (isUserExists)
-      throw new BadRequestException(
-        'Пользователь с таким email уже существует',
-      );
+		const tokens = await this.issueTokens(user.id)
+		const rotation = await this.prisma.user.updateMany({
+			where: { id: user.id, refreshTokenHash: currentHash },
+			data: { refreshTokenHash: hashRefreshToken(tokens.refreshToken) },
+		})
+		if (rotation.count !== 1) {
+			throw new UnauthorizedException('Недействительная сессия')
+		}
 
-    const user = await this.userService.create(registerAuthDto);
+		return { user, ...tokens }
+	}
 
-    const tokens = await this.issueTokens(user.id);
+	async logout(refreshToken?: string): Promise<void> {
+		if (!refreshToken) return
 
-    return {
-      user: this.returnUserFields(user),
-      ...tokens,
-    };
-  }
+		try {
+			const payload = await this.verifyRefreshToken(refreshToken)
+			await this.prisma.user.updateMany({
+				where: {
+					id: payload.sub,
+					refreshTokenHash: hashRefreshToken(refreshToken),
+				},
+				data: { refreshTokenHash: null },
+			})
+		} catch {
+			// Logout remains idempotent and the controller always clears the cookie.
+		}
+	}
 
-  // Логин пользователя
-  async login(loginAuthDto: LoginAuthDto) {
-    const user = await this.validateUser(loginAuthDto);
+	private async issueTokens(userId: number): Promise<TokenPair> {
+		const [accessToken, refreshToken] = await Promise.all([
+			this.jwt.signAsync(
+				{ sub: userId, type: 'access', jti: randomUUID() },
+				{
+					secret: getAccessTokenSecret(this.config),
+					expiresIn: ACCESS_TOKEN_TTL,
+				},
+			),
+			this.jwt.signAsync(
+				{ sub: userId, type: 'refresh', jti: randomUUID() },
+				{
+					secret: getRefreshTokenSecret(this.config),
+					expiresIn: REFRESH_TOKEN_TTL,
+				},
+			),
+		])
 
-    const tokens = await this.issueTokens(user.id);
+		return { accessToken, refreshToken }
+	}
 
-    return {
-      user: this.returnUserFields(user),
-      ...tokens,
-    };
-  }
+	private async storeRefreshToken(userId: number, token: string): Promise<void> {
+		await this.prisma.user.update({
+			where: { id: userId },
+			data: { refreshTokenHash: hashRefreshToken(token) },
+		})
+	}
 
-  // Получить свой профайл
-  async getProfile(userId: number) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
+	private async verifyRefreshToken(token?: string): Promise<JwtPayload> {
+		if (!token) throw new UnauthorizedException('Недействительная сессия')
 
-    const tokens = await this.issueTokens(user.id);
-
-    return {
-      user: this.returnUserFields(user),
-      ...tokens,
-    };
-  }
-
-  // Получить новые токены
-  async getNewTokens(refreshToken?: string) {
-    if (!refreshToken) throw new UnauthorizedException('Ошибка токена');
-    const result = await this.jwt.verifyAsync(refreshToken);
-
-    const user = await this.userService.byId(result.id);
-
-    const tokens = await this.issueTokens(user.id);
-
-    return {
-      user: this.returnUserFields(user),
-      ...tokens,
-    };
-  }
+		try {
+			const payload = await this.jwt.verifyAsync<JwtPayload>(token, {
+				secret: getRefreshTokenSecret(this.config),
+			})
+			if (payload.type !== 'refresh' || !Number.isInteger(payload.sub)) {
+				throw new Error('Invalid refresh payload')
+			}
+			return payload
+		} catch {
+			throw new UnauthorizedException('Недействительная сессия')
+		}
+	}
 }

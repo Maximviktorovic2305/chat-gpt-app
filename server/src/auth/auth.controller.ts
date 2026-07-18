@@ -1,102 +1,89 @@
 import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  HttpCode,
-  UsePipes,
-  ValidationPipe,
-  Req,
-  Res,
-} from '@nestjs/common';
-import { AuthService } from './auth.service';
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Post,
+	Req,
+	Res,
+	UseGuards,
+} from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { Throttle } from '@nestjs/throttler'
+import type { Request, Response } from 'express'
+import { AuthService } from './auth.service'
+import { CurrentUser } from './decorators/user.decorator'
+import { Auth } from './decorators/auth.decorator'
+import { LoginAuthDto, RegisterAuthDto } from './dto/create-auth.dto'
+import { CsrfHeaderGuard } from './guards/csrf-header.guard'
 import {
-  LoginAuthDto,
-  RefreshTokenDto,
-  RegisterAuthDto,
-} from './dto/create-auth.dto';
-import { CurrentUser } from './decorators/user.decorator';
-import { Auth } from './decorators/auth.decorator';
-import type { Request, Response } from 'express';
-import {
-  clearRefreshCookie,
-  readRefreshCookie,
-  setRefreshCookie,
-} from './refresh-cookie';
+	clearRefreshCookie,
+	readRefreshCookie,
+	setRefreshCookie,
+} from './refresh-cookie'
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+	constructor(
+		private readonly authService: AuthService,
+		private readonly config: ConfigService,
+	) {}
 
-  // Регистрация для Userа
-  @Post('register')
-  @UsePipes(new ValidationPipe())
-  @HttpCode(200)
-  async register(
-    @Body() registerAuthDto: RegisterAuthDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const result = await this.authService.register(registerAuthDto);
-    setRefreshCookie(response, result.refreshToken);
+	@Post('register')
+	@HttpCode(HttpStatus.CREATED)
+	@UseGuards(CsrfHeaderGuard)
+	@Throttle({ default: { limit: 5, ttl: 60_000 } })
+	async register(
+		@Body() dto: RegisterAuthDto,
+		@Res({ passthrough: true }) response: Response,
+	) {
+		const result = await this.authService.register(dto)
+		setRefreshCookie(response, result.refreshToken, this.config)
+		return { user: result.user, accessToken: result.accessToken }
+	}
 
-    return { user: result.user, accessToken: result.accessToken };
-  }
+	@Post('login')
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(CsrfHeaderGuard)
+	@Throttle({ default: { limit: 5, ttl: 60_000 } })
+	async login(
+		@Body() dto: LoginAuthDto,
+		@Res({ passthrough: true }) response: Response,
+	) {
+		const result = await this.authService.login(dto)
+		setRefreshCookie(response, result.refreshToken, this.config)
+		return { user: result.user, accessToken: result.accessToken }
+	}
 
-  // Логин для Userа
-  @Post('login')
-  @UsePipes(new ValidationPipe())
-  @HttpCode(200)
-  async login(
-    @Body() loginAuthDto: LoginAuthDto,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const result = await this.authService.login(loginAuthDto);
-    setRefreshCookie(response, result.refreshToken);
+	@Post('refresh')
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(CsrfHeaderGuard)
+	@Throttle({ default: { limit: 10, ttl: 60_000 } })
+	async refresh(
+		@Req() request: Request,
+		@Res({ passthrough: true }) response: Response,
+	) {
+		const result = await this.authService.refresh(readRefreshCookie(request))
+		setRefreshCookie(response, result.refreshToken, this.config)
+		return { user: result.user, accessToken: result.accessToken }
+	}
 
-    return { user: result.user, accessToken: result.accessToken };
-  }
+	@Post('logout')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@UseGuards(CsrfHeaderGuard)
+	@Throttle({ default: { limit: 10, ttl: 60_000 } })
+	async logout(
+		@Req() request: Request,
+		@Res({ passthrough: true }) response: Response,
+	): Promise<void> {
+		await this.authService.logout(readRefreshCookie(request))
+		clearRefreshCookie(response, this.config)
+	}
 
-  @Post('refresh')
-  @HttpCode(200)
-  async refresh(
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const result = await this.authService.getNewTokens(
-      readRefreshCookie(request),
-    );
-    setRefreshCookie(response, result.refreshToken);
-
-    return { user: result.user, accessToken: result.accessToken };
-  }
-
-  @Post('logout')
-  @HttpCode(204)
-  logout(@Res({ passthrough: true }) response: Response) {
-    clearRefreshCookie(response);
-  }
-
-  // Обновление токенов
-  @Post('login/access-token')
-  @HttpCode(200)
-  async getNewTokens(
-    @Body() refreshTokenDto: RefreshTokenDto,
-    @Req() request: Request,
-    @Res({ passthrough: true }) response: Response,
-  ) {
-    const result = await this.authService.getNewTokens(
-      readRefreshCookie(request) || refreshTokenDto?.refreshToken,
-    );
-    setRefreshCookie(response, result.refreshToken);
-
-    return { user: result.user, accessToken: result.accessToken };
-  }
-
-  // Получение своего профиля
-  @Get('me')
-  @Auth()
-  @HttpCode(200)
-  getProfile(@CurrentUser('id') userId: number) {
-    return this.authService.getProfile(userId);
-  }
+	@Get('me')
+	@Auth()
+	getProfile(@CurrentUser('id') userId: number) {
+		return this.authService.getProfile(userId)
+	}
 }

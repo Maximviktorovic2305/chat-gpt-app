@@ -1,102 +1,68 @@
-import HomeFooter from '@/components/home/HomeFooter'
-import HomeForWhom from '@/components/home/HomeForWhom'
-import HomeHeader from '@/components/home/HomeHeader'
-import HomeHero from '@/components/home/HomeHero'
-import HomeInstructions from '@/components/home/HomeInstructions'
-import HomeTryIt from '@/components/home/HomeTryIt'
-import HomeUses from '@/components/home/HomeUses'
-import { Metadata } from 'next'
-
-const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS
-const yandex = process.env.NEXT_PUBLIC_YANDEX_VERIFICATION
+import type { Metadata } from 'next'
+import { HomeScreen } from '@/screens/home'
+import {
+	absoluteUrl,
+	SITE_DESCRIPTION,
+	SITE_NAME,
+	SITE_URL,
+	SOCIAL_IMAGE,
+} from '@/shared/config'
 
 export const metadata: Metadata = {
-	title:
-		'Contact — бесплатная платформа с нейросетью для работы, учебы, общения и много другого',
-	description:
-		'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей MistralAI, для решения задач по программированию, обучению, работе и общению.',
+	title: { absolute: `${SITE_NAME} — бесплатный AI-ассистент` },
+	description: SITE_DESCRIPTION,
 	keywords: [
-		'aicontact',
-		'ai contact',
-		'contact ai',
-		'ai-contact.site',
-		'contact',
-		'Kontact',
 		'нейросеть',
-		'контакт',
-		'нейросеть контакт',
-		'ChatGPT',
-		'chat gpt',
-		'бесплатно',
-		'без регистрации',
-		'MistralAI',
-		'мистрал',
-		'чат-бот',
-		'код',
-		'программирование',
-		'учеба',
-		'работа',
-		'AI',
-		'искусственный интеллект',
-		'нейро-ассистент',
-		'AI chat',
-		'нейросети',
+		'AI-ассистент',
 		'чат с ИИ',
-		'бесплатная нейросеть',
+		'MistralAI',
+		'помощь в программировании',
+		'искусственный интеллект',
 		'бесплатный AI',
-		'бесплатное обучение',
-		'бесплатные нейросети для разработчиков',
-		'бесплатный чат с ИИ',
-		'бесплатная помощь в коде',
 	],
-	authors: [{ name: 'Contact', url: site }],
+	authors: [{ name: SITE_NAME, url: SITE_URL }],
 	openGraph: {
-		title:
-			'Contact — бесплатная платформа с нейросетью для работы, учебы, общения и много другого',
-		description:
-			'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей MistralAI, для решения задач по программированию, обучению, работе и общению.',
-		url: `${site}`,
-		type: 'website',
-		images: [
-			{
-				url: `${site}/meta.png`,
-				width: 630,
-				height: 630,
-				alt: 'Contact — бесплатная платформа с нейросетью для работы, учебы, общения и много другого',
-			},
-		],
+		title: `${SITE_NAME} — бесплатный AI-ассистент`,
+		description: SITE_DESCRIPTION,
+		url: SITE_URL,
+		images: [SOCIAL_IMAGE],
 	},
 	twitter: {
-		card: 'summary_large_image',
-		title:
-			'Contact — бесплатная платформа с нейросетью для работы, учебы, общения и много другого',
-		description:
-			'Используйте Contact — бесплатную платформу с нейросетью, интегрирующей MistralAI, для решения задач по программированию, обучению, работе и общению.',
-		images: [`${site}/meta.png`],
+		card: 'summary',
+		title: `${SITE_NAME} — бесплатный AI-ассистент`,
+		description: SITE_DESCRIPTION,
+		images: [SOCIAL_IMAGE.url],
 	},
-	alternates: {
-		canonical: `${site}`,
-	},
-	robots: 'index, follow',
-	// ✅ Метатег Яндекс-верификации
-	other: {
-		'yandex-verification': `${yandex}`,
-	},
-	icons: {
-		icon: `${site}/faviconka.ico`,
-	},
+	alternates: { canonical: '/' },
+	robots: { index: true, follow: true },
 }
 
 export default function Home() {
+	const structuredData = {
+		'@context': 'https://schema.org',
+		'@type': 'WebApplication',
+		name: SITE_NAME,
+		url: SITE_URL.toString(),
+		description: SITE_DESCRIPTION,
+		applicationCategory: 'UtilitiesApplication',
+		operatingSystem: 'Any',
+		inLanguage: 'ru',
+		offers: { '@type': 'Offer', price: '0', priceCurrency: 'RUB' },
+		potentialAction: {
+			'@type': 'UseAction',
+			target: absoluteUrl('/chat'),
+		},
+	}
+
 	return (
-		<section className='relative h-full bg-[#141415] text-white/70 min-h-screen w-full px-[2%] mx-auto'>
-			<HomeHeader />
-			<HomeHero />
-			<HomeForWhom />
-			<HomeInstructions />
-			<HomeUses />
-			<HomeTryIt />
-			<HomeFooter />
-		</section>
+		<>
+			<script
+				type='application/ld+json'
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(structuredData).replace(/</g, '\\u003c'),
+				}}
+			/>
+			<HomeScreen />
+		</>
 	)
 }

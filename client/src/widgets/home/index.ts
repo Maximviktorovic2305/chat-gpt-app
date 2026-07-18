@@ -1,0 +1,7 @@
+export { default as HomeFooter } from './ui/HomeFooter'
+export { default as HomeForWhom } from './ui/HomeForWhom'
+export { default as HomeHeader } from './ui/HomeHeader'
+export { default as HomeHero } from './ui/HomeHero'
+export { default as HomeInstructions } from './ui/HomeInstructions'
+export { default as HomeTryIt } from './ui/HomeTryIt'
+export { default as HomeUses } from './ui/HomeUses'

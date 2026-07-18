@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Type } from 'class-transformer'
 import {
   ArrayMaxSize,
   ArrayMinSize,
@@ -8,23 +8,23 @@ import {
   MaxLength,
   MinLength,
   ValidateNested,
-} from 'class-validator';
+} from 'class-validator'
 
 export class ChatMessageDto {
   @IsIn(['user', 'assistant'])
-  role: 'user' | 'assistant';
+  role!: 'user' | 'assistant'
 
   @IsString()
   @MinLength(1)
-  @MaxLength(8000)
-  content: string;
+  @MaxLength(4000)
+  content!: string
 }
 
 export class StreamChatDto {
   @IsArray()
   @ArrayMinSize(1)
-  @ArrayMaxSize(30)
+  @ArrayMaxSize(20)
   @ValidateNested({ each: true })
   @Type(() => ChatMessageDto)
-  messages: ChatMessageDto[];
+  messages!: ChatMessageDto[]
 }

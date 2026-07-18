@@ -1,36 +1,23 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-} from '@nestjs/common';
-import { Auth } from 'src/auth/decorators/auth.decorator';
-import { UserService } from './user.service';
-import { DeleteUserDto } from './dto/delete-user.dto';
-import { GetUserByIdDto } from './dto/get-user-by-id.dto';
+import { Controller, Delete, Get, Param, ParseIntPipe } from '@nestjs/common'
+import { Auth } from '../auth/decorators/auth.decorator'
+import { CurrentUser } from '../auth/decorators/user.decorator'
+import { UserService } from './user.service'
 
 @Controller('users')
+@Auth('admin')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+	constructor(private readonly userService: UserService) {}
 
-  // Получение userа по id
-  @Get('id')
-  @Auth()
-  getByUserId(@Body() dto: GetUserByIdDto) {
-    return this.userService.getByUserId(dto.userId);
-  }
+	@Get()
+	getAllUsers() {
+		return this.userService.getAllUsers()
+	}
 
-  // Получение всех пользователей администратором
-  @Get('/all')
-  @Auth('admin')
-  getAllUsers() {
-    return this.userService.getAllUsers();
-  }
-
-  // Удаление пользователя администратором
-  @Delete()
-  @Auth('admin')
-  deleteUser(@Body() dto: DeleteUserDto) {
-    return this.userService.deleteUser(dto.userId);
-  }
+	@Delete(':id')
+	deleteUser(
+		@Param('id', ParseIntPipe) userId: number,
+		@CurrentUser('id') actorId: number,
+	) {
+		return this.userService.deleteUser(userId, actorId)
+	}
 }

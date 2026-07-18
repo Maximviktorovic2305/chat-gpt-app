@@ -1,10 +1,60 @@
 /* eslint-disable @next/next/no-img-element */
 import localFont from 'next/font/local'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import Script from 'next/script'
-import Providers from '@/providers/Providers'
-import YandexMetrikaTracker from '@/components/base/YandexMetrikaTracker'
-import CookieNotice from '@/components/base/CookieNotice'
+import Providers from '@/app/_providers/Providers'
+import {
+	SITE_DESCRIPTION,
+	SITE_NAME,
+	SITE_URL,
+	SOCIAL_IMAGE,
+} from '@/shared/config'
+import YandexMetrikaTracker from '@/shared/ui/YandexMetrikaTracker'
+import CookieNotice from '@/shared/ui/CookieNotice'
+
+export const metadata: Metadata = {
+	metadataBase: SITE_URL,
+	applicationName: SITE_NAME,
+	title: {
+		default: `${SITE_NAME} — бесплатный AI-ассистент`,
+		template: `%s | ${SITE_NAME}`,
+	},
+	description: SITE_DESCRIPTION,
+	category: 'technology',
+	authors: [{ name: SITE_NAME, url: SITE_URL }],
+	creator: SITE_NAME,
+	publisher: SITE_NAME,
+	referrer: 'origin-when-cross-origin',
+	formatDetection: { email: false, address: false, telephone: false },
+	icons: { icon: '/faviconka.ico', shortcut: '/faviconka.ico' },
+	manifest: '/manifest.webmanifest',
+	openGraph: {
+		type: 'website',
+		locale: 'ru_RU',
+		siteName: SITE_NAME,
+		title: `${SITE_NAME} — бесплатный AI-ассистент`,
+		description: SITE_DESCRIPTION,
+		url: SITE_URL,
+		images: [SOCIAL_IMAGE],
+	},
+	twitter: {
+		card: 'summary',
+		title: `${SITE_NAME} — бесплатный AI-ассистент`,
+		description: SITE_DESCRIPTION,
+		images: [SOCIAL_IMAGE.url],
+	},
+	verification: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION
+		? { yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION }
+		: undefined,
+}
+
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+	themeColor: '#141415',
+	colorScheme: 'dark',
+}
 
 const geistSans = localFont({
 	src: './fonts/GeistVF.woff',
@@ -26,9 +76,10 @@ export default function RootLayout({
 
 	return (
 		<html lang='ru' className='size-full'>
-			<Providers>
-				<body
-					className={`${geistSans.variable} ${geistMono.variable} bg-[#141415] size-full antialiased`}>
+			<body
+				suppressHydrationWarning
+				className={`${geistSans.variable} ${geistMono.variable} bg-[#141415] size-full antialiased`}>
+				<Providers>
 					{children}
 
 					{/* Yandex.Metrika counter */}
@@ -65,8 +116,8 @@ export default function RootLayout({
 					{/* Добавляем компонент для отслеживания SPA-переходов */}
 					<YandexMetrikaTracker metrikaId={YANDEX_METRIKA_ID} />
 					<CookieNotice />
-				</body>
-			</Providers>
+				</Providers>
+			</body>
 		</html>
 	)
 }

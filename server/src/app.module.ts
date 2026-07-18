@@ -1,15 +1,26 @@
-import { Module } from '@nestjs/common';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
-import { ChatModule } from './chat/chat.module';
+import { Module } from '@nestjs/common'
+import { ConfigModule } from '@nestjs/config'
+import { AuthModule } from './auth/auth.module'
+import { ChatModule } from './chat/chat.module'
+import { validateEnvironment } from './common/config/validate-environment'
+import { DatabaseModule } from './common/database/database.module'
+import { ErrorHandlingModule } from './common/errors/error-handling.module'
+import { RateLimitModule } from './common/rate-limit/rate-limit.module'
+import { UserModule } from './user/user.module'
 
 @Module({
-  imports: [
-    UserModule,
-    AuthModule,
-    ChatModule,
-    ConfigModule.forRoot({ isGlobal: true }),
-  ],
+	imports: [
+		ConfigModule.forRoot({
+			isGlobal: true,
+			envFilePath: [`.env.${process.env.NODE_ENV ?? 'development'}`, '.env'],
+			validate: validateEnvironment,
+		}),
+		DatabaseModule,
+		ErrorHandlingModule,
+		RateLimitModule,
+		AuthModule,
+		UserModule,
+		ChatModule,
+	],
 })
 export class AppModule {}
