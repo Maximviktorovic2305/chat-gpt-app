@@ -193,7 +193,20 @@ jobs:
             echo "Running Prisma generate..."
             npx prisma generate
             echo "Applying database migrations..."
-            npm run prisma:migrate:deploy
+            set +e
+            migration_output="$(npm run prisma:migrate:deploy 2>&1)"
+            migration_status=$?
+            set -e
+            printf '%s\n' "${migration_output}"
+            if [ "${migration_status}" -ne 0 ]; then
+              if printf '%s\n' "${migration_output}" | grep -q 'P3005'; then
+                echo "Existing database detected; recording the initial schema baseline..."
+                npm run prisma:migrate:baseline
+                npm run prisma:migrate:deploy
+              else
+                exit "${migration_status}"
+              fi
+            fi
             echo "Building backend..."
             npm run build
 
