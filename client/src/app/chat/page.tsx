@@ -1,9 +1,5 @@
-import Chat from '@/components/chat/Chat'
+import { ChatScreen } from '@/screens/chat'
 
-export default function Home() {
-	return (
-		<div className='size-full'>
-			<Chat />
-		</div>
-	)
+export default function ChatPage() {
+	return <ChatScreen />
 }

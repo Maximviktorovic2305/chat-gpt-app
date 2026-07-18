@@ -1,9 +1,10 @@
-import { Prisma } from 'src/generated/prisma/client';
+import type { Prisma } from '../generated/prisma/client'
 
-export const returnUserObject: Prisma.UserSelect = {
-  id: true,
-  name: true,
-  email: true,
-  password: false,
-  isAdmin: true,
-};
+export const publicUserSelect = {
+	id: true,
+	name: true,
+	email: true,
+	isAdmin: true,
+	createdAt: true,
+	updatedAt: true,
+} satisfies Prisma.UserSelect

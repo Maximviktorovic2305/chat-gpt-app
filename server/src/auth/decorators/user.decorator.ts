@@ -1,13 +1,11 @@
-// Получаем данные текущего usera
-
-import { ExecutionContext, createParamDecorator } from '@nestjs/common';
-import { User } from 'src/generated/prisma/client';
+import { createParamDecorator, ExecutionContext } from '@nestjs/common'
+import type { AuthenticatedUser } from '../auth.interface'
 
 export const CurrentUser = createParamDecorator(
-  (data: keyof User, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
-    const user = request.user;
-
-    return data ? user[data] : user;
-  },
-);
+	(data: keyof AuthenticatedUser | undefined, context: ExecutionContext) => {
+		const request = context
+			.switchToHttp()
+			.getRequest<{ user: AuthenticatedUser }>()
+		return data ? request.user[data] : request.user
+	},
+)

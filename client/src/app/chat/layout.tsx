@@ -1,10 +1,10 @@
-import BodyLayout from '@/components/layout/BodyLayout'
-import { Metadata } from 'next'
-
-const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS
+import { BodyLayout } from '@/widgets/chat-layout'
+import { ChatProvider } from '@/features/chat'
+import { SITE_NAME, SOCIAL_IMAGE } from '@/shared/config'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-	title: 'Contact | Нейросеть',
+	title: 'Чат с нейросетью',
 	description:
 		'Общайтесь с искусственным интеллектом онлайн на русском языке. Бесплатно, без регистрации, без SMS и VPN',
 	keywords: [
@@ -41,36 +41,24 @@ export const metadata: Metadata = {
 		'чат без впн',
 		'общение с ИИ',
 	],
-	authors: [{ name: 'AI Contact', url: site }],
 	openGraph: {
 		title: 'Чат с нейросетью — MistralAI. Все бесплатно!',
 		description:
 			'Общайтесь с искусственным интеллектом онлайн на русском языке. Бесплатно, без регистрации, без SMS и VPN. Используйте ChatGPT и MistralAI для кода, учёбы, работы и других задач.',
-		url: `${site}/chat`,
+		url: '/chat',
 		type: 'website',
-		images: [
-			{
-				url: `${site}/meta.png`,
-				width: 1200,
-				height: 630,
-				alt: 'Чат с нейросетью — MistralAI. Все бесплатно!',
-			},
-		],
+		siteName: SITE_NAME,
+		images: [SOCIAL_IMAGE],
 	},
 	twitter: {
-		card: 'summary_large_image',
+		card: 'summary',
 		title: 'Чат с нейросетью — MistralAI. Все бесплатно!',
 		description:
 			'Общайтесь с искусственным интеллектом онлайн на русском языке. Бесплатно, без регистрации, без SMS и VPN. Используйте ChatGPT и MistralAI для кода, учёбы, работы и других задач.',
-		images: [`${site}/meta.png`],
+		images: [SOCIAL_IMAGE.url],
 	},
-	alternates: {
-		canonical: `${site}/chat`,
-	},
-	robots: 'index, follow',
-	icons: {
-		icon: `${site}/faviconka.ico`,
-	}         
+	alternates: { canonical: '/chat' },
+	robots: { index: true, follow: true },
 }
 
 export default function HomeLayout({
@@ -79,8 +67,10 @@ export default function HomeLayout({
 	children: React.ReactNode
 }>) {
 	return (
-		<div lang='ru' className='size-full'>
-			<BodyLayout>{children}</BodyLayout>
-		</div>
+		<ChatProvider>
+			<div lang='ru' className='size-full'>
+				<BodyLayout>{children}</BodyLayout>
+			</div>
+		</ChatProvider>
 	)
 }

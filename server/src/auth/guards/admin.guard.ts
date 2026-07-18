@@ -1,24 +1,20 @@
 import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
-import { User } from 'src/generated/prisma/client';
-import { Observable } from 'rxjs';
+	CanActivate,
+	ExecutionContext,
+	ForbiddenException,
+	Injectable,
+} from '@nestjs/common'
+import type { AuthenticatedUser } from '../auth.interface'
 
 @Injectable()
 export class OnlyAdminGuard implements CanActivate {
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest<{ user: User }>();
-
-    const user = request.user;
-
-    if (!user.isAdmin)
-      throw new ForbiddenException('Только для администратора');
-
-    return user.isAdmin;
-  }
+	canActivate(context: ExecutionContext): boolean {
+		const request = context
+			.switchToHttp()
+			.getRequest<{ user?: AuthenticatedUser }>()
+		if (!request.user?.isAdmin) {
+			throw new ForbiddenException('Недостаточно прав')
+		}
+		return true
+	}
 }

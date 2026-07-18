@@ -1,20 +1,22 @@
-import { MetadataRoute } from 'next'
-
-const site = process.env.NEXT_PUBLIC_DEPLOY_SITE_ADDRESS || 'https://ai-contact.site';
+import type { MetadataRoute } from 'next'
+import { absoluteUrl } from '@/shared/config'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: site,
-      lastModified: new Date(), // Указываем текущую дату как дату последнего изменения
-      changeFrequency: 'weekly', // Указываем, что главная страница меняется еженедельно
-      priority: 1, // Придаем главной странице наивысший приоритет
-    },
-    {
-      url: `${site}/chat`,
-      lastModified: new Date(), // Указываем текущую дату как дату последнего изменения
-      changeFrequency: 'weekly', // Указываем, что страница чата меняется еженедельно
-      priority: 0.9, // Придаем странице чата высокий приоритет
-    },
-  ]
+	return [
+		{
+			url: absoluteUrl('/'),
+			changeFrequency: 'weekly',
+			priority: 1,
+		},
+		{
+			url: absoluteUrl('/chat'),
+			changeFrequency: 'weekly',
+			priority: 0.9,
+		},
+		{
+			url: absoluteUrl('/private-policy'),
+			changeFrequency: 'yearly',
+			priority: 0.3,
+		},
+	]
 }
