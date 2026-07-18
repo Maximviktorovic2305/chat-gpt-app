@@ -25,13 +25,11 @@ jobs:
       # --- CI для NestJS Backend ---
       - name: Install backend dependencies
         working-directory: ./server # Путь к папке с NestJS бэкендом
-        run: npm ci --prefer-offline --no-audit --no-fund
-
-      - name: Generate Prisma client
-        working-directory: ./server
         env:
+          # Prisma config is loaded by the postinstall generate hook. No database
+          # connection is opened; the URL only has to be syntactically valid.
           DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
-        run: npx prisma generate
+        run: npm ci --prefer-offline --no-audit --no-fund
 
       - name: Check backend types
         working-directory: ./server
