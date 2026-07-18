@@ -191,6 +191,19 @@ jobs:
             ensure_secret JWT_ACCESS_SECRET
             ensure_secret JWT_REFRESH_SECRET
 
+            ensure_setting() {
+              setting_name="$1"
+              setting_value="$2"
+              if ! grep -Eq "^${setting_name}=.+$" "${SERVER_ENV_FILE}"; then
+                printf '%s=%s\n' "${setting_name}" "${setting_value}" >> "${SERVER_ENV_FILE}"
+                echo "Added missing ${setting_name}."
+              fi
+            }
+            ensure_setting ALLOWED_ORIGINS "https://ai-contact.site,https://www.ai-contact.site"
+            ensure_setting COOKIE_SECURE "true"
+            ensure_setting TRUST_PROXY_HOPS "1"
+            ensure_setting PORT "4568"
+
             # --- Действия для NestJS Backend ---
             echo "Deploying NestJS Backend..."
             cd $BACKEND_DIR
