@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import localFont from 'next/font/local'
 import type { Metadata, Viewport } from 'next'
+import { headers } from 'next/headers'
 import './globals.css'
 import Script from 'next/script'
 import Providers from '@/app/_providers/Providers'
@@ -67,11 +68,12 @@ const geistMono = localFont({
 	weight: '100 900',
 })
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode
 }>) {
+	const nonce = (await headers()).get('x-nonce') ?? undefined
 	const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID)
 	const isMetrikaEnabled = Number.isSafeInteger(metrikaId) && metrikaId > 0
 
@@ -84,7 +86,7 @@ export default function RootLayout({
 					{children}
 
 					{/* Yandex.Metrika counter */}
-					{isMetrikaEnabled && <Script id='yandex-metrika' strategy='afterInteractive'>
+					{isMetrikaEnabled && <Script id='yandex-metrika' strategy='afterInteractive' nonce={nonce}>
 						{`
                         (function(m,e,t,r,i,k,a){
                             m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
