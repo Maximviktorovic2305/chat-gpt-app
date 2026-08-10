@@ -72,7 +72,8 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode
 }>) {
-	const YANDEX_METRIKA_ID = 103491241
+	const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID)
+	const isMetrikaEnabled = Number.isSafeInteger(metrikaId) && metrikaId > 0
 
 	return (
 		<html lang='ru' className='size-full'>
@@ -83,38 +84,40 @@ export default function RootLayout({
 					{children}
 
 					{/* Yandex.Metrika counter */}
-					<Script id='yandex-metrika' strategy='afterInteractive'>
+					{isMetrikaEnabled && <Script id='yandex-metrika' strategy='afterInteractive'>
 						{`
                         (function(m,e,t,r,i,k,a){
                             m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
                             m[i].l=1*new Date();
                             for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
                             k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-                        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=${YANDEX_METRIKA_ID}', 'ym');
+                        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=${metrikaId}', 'ym');
 
-                        ym(${YANDEX_METRIKA_ID}, 'init', {
+                        ym(${metrikaId}, 'init', {
                             ssr:true,
                             webvisor:true,
                             clickmap:true,
                             ecommerce:"dataLayer",
+                            referrer:document.referrer,
+                            url:location.href,
                             accurateTrackBounce:true,
                             trackLinks:true
                         });
                     `}
-					</Script>
+					</Script>}
 					{/* No-script fallback для пользователей без JS, размещается прямо в body */}
-					<noscript>
+					{isMetrikaEnabled && <noscript>
 						<div>
 							<img
-								src={`https://mc.yandex.ru/watch/${YANDEX_METRIKA_ID}`}
+								src={`https://mc.yandex.ru/watch/${metrikaId}`}
 								style={{ position: 'absolute', left: '-9999px' }}
 								alt=''
 							/>
 						</div>
-					</noscript>
+					</noscript>}
 					{/* /Yandex.Metrika counter */}
 					{/* Добавляем компонент для отслеживания SPA-переходов */}
-					<YandexMetrikaTracker metrikaId={YANDEX_METRIKA_ID} />
+					{isMetrikaEnabled && <YandexMetrikaTracker metrikaId={metrikaId} />}
 					<CookieNotice />
 				</Providers>
 			</body>
