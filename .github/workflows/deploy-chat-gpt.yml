@@ -176,9 +176,9 @@ jobs:
             if [ -d "$APP_DIR/.git" ]; then
               echo "Repository already exists. Cleaning local changes and pulling latest..."
               cd $APP_DIR
-              git reset --hard HEAD # Сброс всех локальных изменений
-              git clean -fdx # Удаление всех неотслеживаемых файлов и директорий
-              git pull origin master # Получение последних изменений (использует HTTPS, т.к. репо публичный)
+              git fetch --prune origin master
+              git reset --hard origin/master
+              git clean -fdx
             else
               echo "Repository does not exist. Cloning..."
               # Если директория существует, но не является репозиторием, очищаем ее
