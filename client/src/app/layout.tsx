@@ -1,5 +1,4 @@
 import { ConsentAnalytics } from "@/features/consent-analytics";
-import { AuthorSupportButton } from "@/features/author-support";
 import { PrivacyPreferences } from "@/features/privacy-preferences";
 import localFont from "next/font/local";
 import type { Metadata, Viewport } from "next";
@@ -86,7 +85,6 @@ export default async function RootLayout({
 
           {/* Yandex.Metrika counter */}
           <ConsentAnalytics counterId={metrikaId} nonce={nonce} />
-          <AuthorSupportButton />
           <PrivacyPreferences />
         </Providers>
       </body>

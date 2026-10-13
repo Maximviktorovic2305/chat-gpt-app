@@ -1,3 +1,4 @@
+import { AnalyticsSettingsButton } from "@/features/privacy-preferences";
 import Link from "next/link";
 import {
   LEGAL_DOCUMENTS,
@@ -14,6 +15,7 @@ export function LegalPage({ document }: { document: LegalDocument }) {
       <Link href="/">← {LEGAL_SITE_NAME}</Link>
       <h1>{content.title}</h1>
       <p>Редакция от {LEGAL_VERSION}</p>
+      {document === "cookies" && <AnalyticsSettingsButton />}
       <LegalLinks />
       {content.sections.map((section) => (
         <section key={section.title}>
