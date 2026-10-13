@@ -1,18 +1,21 @@
-import type { User } from '@/entities/user'
+import type { User } from "@/entities/user";
 
 export interface AuthTokens {
-	accessToken: string
+  accessToken: string;
 }
 
 export interface AuthResponse extends AuthTokens {
-	user: User
+  user: User;
 }
 
 export interface LoginCredentials {
-	email: string
-	password: string
+  email: string;
+  password: string;
 }
 
 export interface RegisterCredentials extends LoginCredentials {
-	name?: string
+  acceptTerms: boolean;
+  acceptDataProcessing: boolean;
+  legalVersion: "2026-10-13";
+  name?: string;
 }

@@ -1,128 +1,95 @@
-/* eslint-disable @next/next/no-img-element */
-import localFont from 'next/font/local'
-import type { Metadata, Viewport } from 'next'
-import { headers } from 'next/headers'
-import './globals.css'
-import Script from 'next/script'
-import Providers from '@/app/_providers/Providers'
+import { ConsentAnalytics } from "@/features/consent-analytics";
+import { AuthorSupportButton } from "@/features/author-support";
+import { PrivacyPreferences } from "@/features/privacy-preferences";
+import localFont from "next/font/local";
+import type { Metadata, Viewport } from "next";
+import { headers } from "next/headers";
+import "./globals.css";
+import Providers from "@/app/_providers/Providers";
 import {
-	SITE_DESCRIPTION,
-	SITE_NAME,
-	SITE_URL,
-	SOCIAL_IMAGE,
-} from '@/shared/config'
-import YandexMetrikaTracker from '@/shared/ui/YandexMetrikaTracker'
-import CookieNotice from '@/shared/ui/CookieNotice'
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+  SOCIAL_IMAGE,
+} from "@/shared/config";
 
 export const metadata: Metadata = {
-	metadataBase: SITE_URL,
-	applicationName: SITE_NAME,
-	title: {
-		default: `${SITE_NAME} — бесплатный AI-ассистент`,
-		template: `%s | ${SITE_NAME}`,
-	},
-	description: SITE_DESCRIPTION,
-	category: 'technology',
-	authors: [{ name: SITE_NAME, url: SITE_URL }],
-	creator: SITE_NAME,
-	publisher: SITE_NAME,
-	referrer: 'origin-when-cross-origin',
-	formatDetection: { email: false, address: false, telephone: false },
-	icons: { icon: '/faviconka.ico', shortcut: '/faviconka.ico' },
-	manifest: '/manifest.webmanifest',
-	openGraph: {
-		type: 'website',
-		locale: 'ru_RU',
-		siteName: SITE_NAME,
-		title: `${SITE_NAME} — бесплатный AI-ассистент`,
-		description: SITE_DESCRIPTION,
-		url: SITE_URL,
-		images: [SOCIAL_IMAGE],
-	},
-	twitter: {
-		card: 'summary',
-		title: `${SITE_NAME} — бесплатный AI-ассистент`,
-		description: SITE_DESCRIPTION,
-		images: [SOCIAL_IMAGE.url],
-	},
-	verification: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION
-		? { yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION }
-		: undefined,
-}
+  metadataBase: SITE_URL,
+  applicationName: SITE_NAME,
+  title: {
+    default: `${SITE_NAME} — бесплатный AI-ассистент`,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  category: "technology",
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  referrer: "origin-when-cross-origin",
+  formatDetection: { email: false, address: false, telephone: false },
+  icons: { icon: "/faviconka.ico", shortcut: "/faviconka.ico" },
+  manifest: "/manifest.webmanifest",
+  openGraph: {
+    type: "website",
+    locale: "ru_RU",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — бесплатный AI-ассистент`,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    images: [SOCIAL_IMAGE],
+  },
+  twitter: {
+    card: "summary",
+    title: `${SITE_NAME} — бесплатный AI-ассистент`,
+    description: SITE_DESCRIPTION,
+    images: [SOCIAL_IMAGE.url],
+  },
+  verification: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION
+    ? { yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION }
+    : undefined,
+};
 
 export const viewport: Viewport = {
-	width: 'device-width',
-	initialScale: 1,
-	themeColor: '#141415',
-	colorScheme: 'dark',
-}
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#141415",
+  colorScheme: "dark",
+};
 
 const geistSans = localFont({
-	src: './fonts/GeistVF.woff',
-	variable: '--font-geist-sans',
-	weight: '100 900',
-})
+  src: "./fonts/GeistVF.woff",
+  variable: "--font-geist-sans",
+  weight: "100 900",
+});
 const geistMono = localFont({
-	src: './fonts/GeistMonoVF.woff',
-	variable: '--font-geist-mono',
-	weight: '100 900',
-})
+  src: "./fonts/GeistMonoVF.woff",
+  variable: "--font-geist-mono",
+  weight: "100 900",
+});
 
 export default async function RootLayout({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode
+  children: React.ReactNode;
 }>) {
-	const nonce = (await headers()).get('x-nonce') ?? undefined
-	const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID)
-	const isMetrikaEnabled = Number.isSafeInteger(metrikaId) && metrikaId > 0
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const metrikaId = Number(process.env.NEXT_PUBLIC_YANDEX_METRIKA_ID);
 
-	return (
-		<html lang='ru' className='size-full'>
-			<body
-				suppressHydrationWarning
-				className={`${geistSans.variable} ${geistMono.variable} bg-[#141415] size-full antialiased`}>
-				<Providers>
-					{children}
+  return (
+    <html lang="ru" className="size-full">
+      <body
+        suppressHydrationWarning
+        className={`${geistSans.variable} ${geistMono.variable} bg-[#141415] size-full antialiased`}
+      >
+        <Providers>
+          {children}
 
-					{/* Yandex.Metrika counter */}
-					{isMetrikaEnabled && <Script id='yandex-metrika' strategy='afterInteractive' nonce={nonce}>
-						{`
-                        (function(m,e,t,r,i,k,a){
-                            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-                            m[i].l=1*new Date();
-                            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-                            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-                        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=${metrikaId}', 'ym');
-
-                        ym(${metrikaId}, 'init', {
-                            ssr:true,
-                            webvisor:true,
-                            clickmap:true,
-                            ecommerce:"dataLayer",
-                            referrer:document.referrer,
-                            url:location.href,
-                            accurateTrackBounce:true,
-                            trackLinks:true
-                        });
-                    `}
-					</Script>}
-					{/* No-script fallback для пользователей без JS, размещается прямо в body */}
-					{isMetrikaEnabled && <noscript>
-						<div>
-							<img
-								src={`https://mc.yandex.ru/watch/${metrikaId}`}
-								style={{ position: 'absolute', left: '-9999px' }}
-								alt=''
-							/>
-						</div>
-					</noscript>}
-					{/* /Yandex.Metrika counter */}
-					{/* Добавляем компонент для отслеживания SPA-переходов */}
-					{isMetrikaEnabled && <YandexMetrikaTracker metrikaId={metrikaId} />}
-					<CookieNotice />
-				</Providers>
-			</body>
-		</html>
-	)
+          {/* Yandex.Metrika counter */}
+          <ConsentAnalytics counterId={metrikaId} nonce={nonce} />
+          <AuthorSupportButton />
+          <PrivacyPreferences />
+        </Providers>
+      </body>
+    </html>
+  );
 }

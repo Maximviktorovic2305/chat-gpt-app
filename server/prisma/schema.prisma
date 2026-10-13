@@ -9,6 +9,9 @@ datasource db {
 }
 
 model User {
+  termsVersion String? @map("terms_version")
+  dataConsentVersion String? @map("data_consent_version")
+  legalAcceptedAt DateTime? @map("legal_accepted_at")
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
