@@ -13,12 +13,14 @@ export function PrivacyPreferences() {
   const choice = usePrivacyChoice();
   const [ready, setReady] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [analyticsAllowed, setAnalyticsAllowed] = useState(false);
+  const [analyticsAllowed, setAnalyticsAllowed] = useState(HAS_ANALYTICS);
   const id = useId();
   useEffect(() => {
     const frame = requestAnimationFrame(() => setReady(true));
     const open = () => {
-      setAnalyticsAllowed(choice === "analytics");
+      setAnalyticsAllowed(
+        choice === null ? HAS_ANALYTICS : choice === "analytics",
+      );
       setEditing(true);
     };
     window.addEventListener(OPEN_PRIVACY_EVENT, open);
@@ -54,7 +56,7 @@ export function PrivacyPreferences() {
           />
           <span>
             Разрешаю аналитику Яндекс Метрики{" "}
-            <small>Необязательно. Помогает улучшать сайт.</small>
+            <small>Необязательно. Включится после подтверждения.</small>
           </span>
         </label>
       )}
@@ -63,7 +65,7 @@ export function PrivacyPreferences() {
         className={styles.privacyChoice}
         onClick={acknowledge}
       >
-        Понятно
+        {HAS_ANALYTICS && analyticsAllowed ? "Включить аналитику" : "Понятно"}
       </button>
     </aside>
   );
