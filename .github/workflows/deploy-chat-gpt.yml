@@ -1,315 +1,82 @@
-name: CI/CD Pipeline for Chat-GPT App
-
+name: Native site quality and deployment
 on:
   push:
-    branches:
-      - master # Основная ветка в git
-
-concurrency:
-  group: chat-gpt-app-production
-  cancel-in-progress: false
-
+    branches: [master, native-isolation]
+  pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
-
+concurrency:
+  group: chat-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 25
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+      NEXT_PUBLIC_DEPLOY_SITE_ADDRESS: https://ai-contact.site
+      NEXT_PUBLIC_SERVER_URL: https://ai-contact.site
+      NEXT_PUBLIC_YANDEX_METRIKA_ID: '0'
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
-
-      - name: Set up Node.js
-        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
-          node-version: "24.18.0"
+          node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: |
             server/package-lock.json
             client/package-lock.json
-
-      - name: Use pinned npm version
-        run: npm install --global npm@12.0.1
-
-      # --- CI для NestJS Backend ---
-      - name: Install backend dependencies
-        working-directory: ./server # Путь к папке с NestJS бэкендом
-        env:
-          # Prisma config is loaded by the postinstall generate hook. No database
-          # connection is opened; the URL only has to be syntactically valid.
-          DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
-        run: npm ci --prefer-offline --no-audit --no-fund
-
-      - name: Check backend types
-        working-directory: ./server
-        run: npm run typecheck
-
-      - name: Lint backend
-        working-directory: ./server
-        run: npm run lint
-
-      - name: Test backend
-        working-directory: ./server
-        run: npm test -- --runInBand
-
-      - name: Audit backend dependencies
-        working-directory: ./server
-        run: npm audit --audit-level=low
-
-      - name: Build backend
-        working-directory: ./server
-        run: npm run build
-
-      # --- CI для Next.js Frontend ---
-      - name: Install frontend dependencies
-        working-directory: ./client # Путь к папке с Next.js фронтендом
-        run: npm ci --prefer-offline --no-audit --no-fund
-
-      - name: Check frontend types and architecture
-        working-directory: ./client
-        run: npm run typecheck && npm run lint:fsd
-
-      - name: Lint frontend
-        working-directory: ./client
-        run: npm run lint
-
-      - name: Audit frontend dependencies
-        working-directory: ./client
-        run: npm audit --audit-level=low
-
-      - name: Build frontend
-        working-directory: ./client
-        env:
-          NEXT_PUBLIC_DEPLOY_SITE_ADDRESS: https://ai-contact.site
-          NEXT_PUBLIC_SERVER_URL: https://ai-contact.site
-          NEXT_PUBLIC_YANDEX_METRIKA_ID: "0"
-        run: npm run build
-
+      - run: npm install --global npm@12.0.1 --ignore-scripts --no-audit --no-fund
+      - run: npm ci --no-audit --no-fund
+        working-directory: server
+      - name: Backend checks
+        working-directory: server
+        run: |
+          npm run lint
+          npm run typecheck
+          npm test -- --runInBand
+          npm run lint:dead-code --if-present
+          npm audit --audit-level=low
+          npm run build
+          test -f dist/main.js
+      - run: npm ci --no-audit --no-fund
+        working-directory: client
+      - name: Frontend checks
+        working-directory: client
+        run: |
+          npm run lint
+          npm run typecheck
+          npm run lint:fsd
+          npm run lint:dead-code --if-present
+          npm run test:security
+          npm audit --audit-level=low
+          npm run build
+          test -f dist/standalone/server.js
   deploy:
-    needs: build # Этот job запускается только после успешного завершения job 'build'
+    needs: validate
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
-    environment: Production # Опционально, для управления секретами и окружениями
-    timeout-minutes: 30 # Увеличиваем таймаут для всего job 'deploy' до 30 минут
-
+    environment: Production
+    timeout-minutes: 35
+    concurrency:
+      group: chat-production
+      cancel-in-progress: false
     steps:
-      - name: Deploy to server
-        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+      - uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         env:
-          NEXT_PUBLIC_YANDEX_METRIKA_ID: ${{ secrets.NEXT_PUBLIC_YANDEX_METRIKA_ID }}
-          NEXT_PUBLIC_YANDEX_VERIFICATION: ${{ secrets.NEXT_PUBLIC_YANDEX_VERIFICATION }}
+          DEPLOY_SHA: ${{ github.sha }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: NEXT_PUBLIC_YANDEX_METRIKA_ID,NEXT_PUBLIC_YANDEX_VERIFICATION
+          command_timeout: 30m
+          envs: DEPLOY_SHA
           script: |
-            set -e # Выход немедленно, если команда завершается с ненулевым статусом.
-
-            case "${NEXT_PUBLIC_YANDEX_METRIKA_ID}" in
-              ''|*[!0-9]*) echo "NEXT_PUBLIC_YANDEX_METRIKA_ID must be configured as a numeric GitHub Actions secret" >&2; exit 1 ;;
-            esac
-
-            # --- Загружаем NVM и активируем нужную версию Node.js ---
-            # Этот шаг гарантирует, что актуальный Node.js LTS доступен
-            # для всех последующих команд npm и node в этой SSH-сессии.
-            echo "Loading NVM and activating Node.js 24.18.0..."
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-            # Активируем нужную версию Node.js (устанавливаем, если не найдена, затем используем)
-            nvm use 24.18.0 || nvm install 24.18.0 && nvm use 24.18.0
-            npm install --global npm@12.0.1
-
-            echo "Verifying Node.js and npm commands after NVM activation:"
-            node -v # Проверяем версию Node.js
-            npm -v  # Проверяем версию npm
-
-            # --- Установка PM2 (теперь npm должен быть доступен) ---
-            echo "Ensuring PM2 is installed globally..."
-            npm install -g pm2@7.0.3 # Установка фиксированной версии PM2
-            echo "Verifying pm2 command after global install:"
-            which pm2 || echo "pm2 not found after global install" # Проверка после установки
-
-            wait_for_http() {
-              health_url="$1"
-              process_name="$2"
-              attempt=1
-              while [ "${attempt}" -le 15 ]; do
-                if curl --fail --silent --show-error --max-time 5 "${health_url}" > /dev/null; then
-                  sleep 3
-                  if curl --fail --silent --show-error --max-time 5 "${health_url}" > /dev/null; then
-                    echo "Health check passed: ${health_url}"
-                    return 0
-                  fi
-                fi
-                echo "Waiting for ${process_name} (${attempt}/15)..."
-                attempt=$((attempt + 1))
-                sleep 2
-              done
-
-              echo "Health check failed for ${process_name}. Recent logs:"
-              pm2 logs "${process_name}" --lines 80 --nostream || true
-              return 1
-            }
-
-            # Директории приложения на сервере (НОВЫЙ ПУТЬ ДЛЯ ЭТОГО ПРОЕКТА)
-            APP_DIR="/home/max/chat-gpt-app"
-            BACKEND_DIR="${APP_DIR}/server"
-            FRONTEND_DIR="${APP_DIR}/client"
-            SERVER_ENV_FILE="${BACKEND_DIR}/.env"
-            TEMP_SERVER_ENV_FILE="/tmp/chat-gpt-app_server.env"
-            # URL РЕПОЗИТОРИЯ (публичный, используем HTTPS)
-            REPO_URL="https://github.com/Maximviktorovic2305/chat-gpt-app.git"
-
-            echo "Ensuring application directory exists: $APP_DIR"
-            mkdir -p $APP_DIR
-
-            if [ -f "${SERVER_ENV_FILE}" ]; then
-              cp "${SERVER_ENV_FILE}" "${TEMP_SERVER_ENV_FILE}"
-              chmod 600 "${TEMP_SERVER_ENV_FILE}"
-            fi
-
-            # Клонирование или обновление репозитория
-            echo "Checking repository status on server..."
-            if [ -d "$APP_DIR/.git" ]; then
-              echo "Repository already exists. Cleaning local changes and pulling latest..."
-              cd $APP_DIR
-              git fetch --prune origin master
-              git reset --hard origin/master
-              git clean -fdx
-            else
-              echo "Repository does not exist. Cloning..."
-              # Если директория существует, но не является репозиторием, очищаем ее
-              if [ -d "$APP_DIR" ] && [ "$(ls -A $APP_DIR)" ]; then
-                  echo "Directory exists but is not a git repo. Cleaning contents before cloning."
-                  rm -rf $APP_DIR/* # ВНИМАНИЕ: Это удалит все в APP_DIR!
-              fi
-              git clone $REPO_URL $APP_DIR
-            fi
-
-            cd $APP_DIR # Убедитесь, что мы в корневой директории приложения после клонирования/обновления
-            echo "Current application root directory: $(pwd)"
-            ls -la # Вывод содержимого корневой директории приложения
-
-            if [ -f "${TEMP_SERVER_ENV_FILE}" ]; then
-              cp "${TEMP_SERVER_ENV_FILE}" "${SERVER_ENV_FILE}"
-              chmod 600 "${SERVER_ENV_FILE}"
-              rm -f "${TEMP_SERVER_ENV_FILE}"
-              echo "Server environment restored."
-            fi
-
-            # One-time migration from the legacy shared JWT secret to two
-            # independent high-entropy secrets. Values are never printed.
-            touch "${SERVER_ENV_FILE}"
-            chmod 600 "${SERVER_ENV_FILE}"
-            ensure_secret() {
-              secret_name="$1"
-              if ! grep -Eq "^${secret_name}=.{32,}$" "${SERVER_ENV_FILE}"; then
-                printf '%s=%s\n' "${secret_name}" "$(openssl rand -hex 48)" >> "${SERVER_ENV_FILE}"
-                echo "Generated missing ${secret_name}."
-              fi
-            }
-            ensure_secret JWT_ACCESS_SECRET
-            ensure_secret JWT_REFRESH_SECRET
-
-            ensure_setting() {
-              setting_name="$1"
-              setting_value="$2"
-              if ! grep -Eq "^${setting_name}=.+$" "${SERVER_ENV_FILE}"; then
-                printf '%s=%s\n' "${setting_name}" "${setting_value}" >> "${SERVER_ENV_FILE}"
-                echo "Added missing ${setting_name}."
-              fi
-            }
-            ensure_setting ALLOWED_ORIGINS "https://ai-contact.site,https://www.ai-contact.site"
-            ensure_setting COOKIE_SECURE "true"
-            ensure_setting TRUST_PROXY_HOPS "1"
-            ensure_setting PORT "4568"
-
-            # --- Действия для NestJS Backend ---
-            echo "Deploying NestJS Backend..."
-            cd $BACKEND_DIR
-            echo "Current directory for backend: $(pwd)"
-            ls -la # Проверка содержимого директории бэкенда
-
-            # Очистка node_modules и папки сборки для чистой установки/сборки
-            echo "Cleaning backend build directory..."
-            rm -rf dist
-            ls -la # Проверяем, что папки удалены
-
-            echo "PATH before npm install (backend): $PATH" # Отладка PATH
-            which npm # Отладка расположения npm
-            which npx # Отладка расположения npx
-            echo "Installing backend dependencies..."
-            npm config set fetch-retries 5
-            npm config set fetch-retry-mintimeout 20000
-            npm config set fetch-retry-maxtimeout 120000
-            npm ci --prefer-offline --no-audit --no-fund
-            echo "Contents of node_modules/.bin (backend):" # Отладка node_modules/.bin
-            ls -la node_modules/.bin || true # Используем || true, чтобы скрипт не падал, если директория пуста
-            echo "Running Prisma generate..."
-            npx prisma generate
-            echo "Applying database migrations..."
-            set +e
-            migration_output="$(npm run prisma:migrate:deploy 2>&1)"
-            migration_status=$?
-            set -e
-            printf '%s\n' "${migration_output}"
-            if [ "${migration_status}" -ne 0 ]; then
-              if printf '%s\n' "${migration_output}" | grep -q 'P3005'; then
-                echo "Existing database detected; recording the initial schema baseline..."
-                npm run prisma:migrate:baseline
-                npm run prisma:migrate:deploy
-              else
-                exit "${migration_status}"
-              fi
-            fi
-            echo "Building backend..."
-            npm run build
-
-            # Перезапуск NestJS приложения (используя PM2)
-            echo "Stopping/deleting old backend PM2 process (chat-gpt-app-server)..."
-            pm2 stop chat-gpt-app-server || true # Остановить, если уже запущен
-            pm2 delete chat-gpt-app-server || true # Удалить старую конфигурацию
-            echo "Starting new backend PM2 process (chat-gpt-app-server)..."
-            pm2 start ecosystem.config.js --env production --name chat-gpt-app-server # Запустить новую
-            wait_for_http "http://127.0.0.1:4568/api/health" "chat-gpt-app-server"
-            pm2 save # Сохранить состояние PM2, чтобы PM2 запускал процессы после перезагрузки сервера
-
-            # --- Действия для Next.js Frontend ---
-            echo "Deploying Next.js Frontend..."
-            cd $FRONTEND_DIR
-            export NEXT_PUBLIC_SERVER_URL="https://ai-contact.site"
-            export NEXT_PUBLIC_DEPLOY_SITE_ADDRESS="https://ai-contact.site"
-            echo "Current directory for frontend: $(pwd)"
-            ls -la # Проверка содержимого директории фронтенда
-
-            # Очистка node_modules и папки сборки для чистой установки/сборки
-            echo "Cleaning frontend build directory..."
-            rm -rf dist
-            ls -la # Проверяем, что папки удалены
-
-            echo "PATH before npm install (frontend): $PATH" # Отладка PATH
-            which npm # Отладка расположения npm
-            which npx # Отладка расположения npx
-            echo "Installing frontend dependencies.."
-            npm config set fetch-retries 5
-            npm config set fetch-retry-mintimeout 20000
-            npm config set fetch-retry-maxtimeout 120000
-            npm ci --prefer-offline --no-audit --no-fund
-            echo "Contents of node_modules/.bin (frontend):" # Отладка node_modules/.bin
-            ls -la node_modules/.bin || true
-            echo "Building frontend..."
-            npm run build # Сборка фронтенда
-
-            # Перезапуск Next.js приложения (используя PM2)
-            echo "Stopping/deleting old frontend PM2 process (chat-gpt-app-client)..."
-            pm2 stop chat-gpt-app-client || true
-            pm2 delete chat-gpt-app-client || true
-            echo "Starting new frontend PM2 process (chat-gpt-app-client)..."
-            pm2 start npm --name "chat-gpt-app-client" -- start # Запуск Next.js в продакшене
-            wait_for_http "http://127.0.0.1:3875/" "chat-gpt-app-client"
-            pm2 save # Сохранить состояние PM2
-
-            echo "Deployment complete."
+            set -Eeuo pipefail
+            [[ "$DEPLOY_SHA" =~ ^[0-9a-f]{40}$ ]] || exit 1
+            script_file="$(mktemp)"
+            trap 'rm -f "$script_file"' EXIT
+            curl --fail --silent --show-error --max-time 30 \
+              "https://raw.githubusercontent.com/Maximviktorovic2305/chat-gpt-app/${DEPLOY_SHA}/deploy/deploy.sh" -o "$script_file"
+            bash "$script_file"

@@ -11,6 +11,8 @@ const securityHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
+  experimental: { isrFlushToDisk: false },
 	distDir: 'dist',
 	poweredByHeader: false,
 	async headers() {
