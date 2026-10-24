@@ -18,6 +18,17 @@ runtime="/srv/native-sites/$site/releases/$sha"
 mkdir -p "/home/max/build-sites/$site" "/home/max/.local/npm-$npm_version"
 exec 9>"/home/max/build-sites/$site/deploy.lock"
 flock 9
+finish_deploy() {
+  sudo -n /usr/local/sbin/sites-admin "$site" backup
+  sudo -n /usr/local/sbin/sites-admin "$site" migrate "$sha"
+  sudo -n /usr/local/sbin/sites-admin "$site" activate "$sha"
+  sudo -n /usr/local/sbin/sites-admin "$site" retain
+}
+if [[ -f "$runtime/ready" ]]; then
+  if [[ "${NATIVE_BUILD_ONLY:-0}" != 1 ]]; then finish_deploy; fi
+  exit 0
+fi
+test ! -L "$runtime"
 tool="/home/max/.local/npm-$npm_version/node_modules/npm/bin/npm-cli.js"
 test -f "$tool" || npm install --prefix "/home/max/.local/npm-$npm_version" "npm@$npm_version" --ignore-scripts --no-audit --no-fund
 npm_fixed() { node "$tool" "$@"; }
@@ -52,6 +63,5 @@ rm -rf "$runtime/web/dist/cache"
 ln -s "/var/cache/native-$site-web" "$runtime/web/dist/cache"
 touch "$runtime/ready"
 if [[ "${NATIVE_BUILD_ONLY:-0}" == 1 ]]; then printf 'Built isolated runtime %s %s\n' "$site" "$sha"; exit 0; fi
-sudo -n /usr/local/sbin/sites-admin "$site" backup
-sudo -n /usr/local/sbin/sites-admin "$site" activate "$sha"
+finish_deploy
 printf 'Deployed isolated runtime %s %s\n' "$site" "$sha"
