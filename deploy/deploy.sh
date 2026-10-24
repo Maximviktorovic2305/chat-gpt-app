@@ -21,7 +21,7 @@ flock 9
 tool="/home/max/.local/npm-$npm_version/node_modules/npm/bin/npm-cli.js"
 test -f "$tool" || npm install --prefix "/home/max/.local/npm-$npm_version" "npm@$npm_version" --ignore-scripts --no-audit --no-fund
 npm_fixed() { node "$tool" "$@"; }
-git -C "$repo" fetch "https://github.com/Maximviktorovic2305/$repository.git" "$sha"
+git -C "$repo" fetch origin "$sha"
 if [[ ! -d "$build" ]]; then git -C "$repo" worktree add --detach "$build" "$sha"; fi
 test "$(git -C "$build" rev-parse HEAD)" = "$sha"
 cd "$build/server"
