@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "packageManager": "npm@12.0.1",
   "engines": {
-    "node": ">=24.15.0 <25",
+    "node": ">=24.22.1 <25",
     "npm": ">=12 <13"
   },
   "scripts": {
@@ -28,7 +28,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "pretest": "node --test vendor/deepmerge/security-check.cjs"
   },
   "dependencies": {
     "@mistralai/mistralai": "^2.7.0",
@@ -82,7 +83,8 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^6.0.0",
-    "typescript-eslint": "^8.71.2"
+    "typescript-eslint": "^8.71.2",
+    "deepmerge": "file:vendor/deepmerge"
   },
   "overrides": {
     "@hono/node-server": "^1.19.13",
@@ -92,7 +94,8 @@
     "mysql2": "3.24.5",
     "@istanbuljs/load-nyc-config": {
       "js-yaml": "4.3.2"
-    }
+    },
+    "deepmerge": "$deepmerge"
   },
   "jest": {
     "moduleFileExtensions": [
